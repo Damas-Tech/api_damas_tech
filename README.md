@@ -1,10 +1,10 @@
 # 🚀 Projeto API - Damas Tech
 
-![Damas Tech Logo](https://link-da-imagem-do-logo.com/logo.png)
+<img src="https://github.com/user-attachments/assets/7d01dd3e-ef36-4b8d-9063-286a73c608ae" alt="Texto alternativo" width="300" height="300">
+
 
 O **Damas Tech** é uma iniciativa que visa promover a inclusão de mulheres no mercado de trabalho, oferecendo programas de treinamento e bootcamps em parceria com empresas. A API desenvolvida permitirá a gestão de informações relacionadas aos programas, empresas parceiras e participantes, criando uma plataforma de conexão entre as mulheres e oportunidades profissionais.
 
-![Damas Tech Logo](https://via.placeholder.com/800x200.png?text=Damas+Tech) <!-- Insira a URL da imagem do logotipo aqui -->
 
 ## 📚 Sumário
 
