@@ -1,9 +1,12 @@
-# API Damas Tech
- # Projeto API - Gestão de Biblioteca
+# 🚀 Projeto API - Damas Tech
 
-Bem-vindo ao projeto de API para gestão de uma biblioteca! Este projeto foi desenvolvido utilizando Django REST Framework e SQLite3, com o objetivo de criar uma API robusta e escalável para gerenciar informações de livros, autores e usuários da biblioteca.
+![Damas Tech Logo](https://link-da-imagem-do-logo.com/logo.png)
 
-## Sumário
+O **Damas Tech** é uma iniciativa que visa promover a inclusão de mulheres no mercado de trabalho, oferecendo programas de treinamento e bootcamps em parceria com empresas. A API desenvolvida permitirá a gestão de informações relacionadas aos programas, empresas parceiras e participantes, criando uma plataforma de conexão entre as mulheres e oportunidades profissionais.
+
+![Damas Tech Logo](https://via.placeholder.com/800x200.png?text=Damas+Tech) <!-- Insira a URL da imagem do logotipo aqui -->
+
+## 📚 Sumário
 
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
@@ -12,34 +15,44 @@ Bem-vindo ao projeto de API para gestão de uma biblioteca! Este projeto foi des
 - [Como Contribuir](#como-contribuir)
 - [Equipe](#equipe)
 - [Links Úteis](#links-úteis)
+- [Dashboard](#dashboard)
+- [Licença](#licença)
 
-## Sobre o Projeto
+## 💡 Sobre o Projeto
 
-O projeto de API de Gestão de Biblioteca tem como objetivo fornecer uma plataforma eficiente para o gerenciamento de livros, autores e usuários de uma biblioteca. Utilizando Django REST Framework, a API oferece funcionalidades como cadastro, edição e exclusão de livros, além de autenticação de usuários. O banco de dados utilizado é o SQLite3, garantindo simplicidade e agilidade no desenvolvimento.
+O projeto **Damas Tech** busca conectar mulheres ao mercado de trabalho por meio de programas de capacitação e treinamento desenvolvidos em parceria com empresas de diversos setores. A API será a base para gerenciar:
 
-### Funcionalidades principais:
-- CRUD de livros (criar, listar, editar, excluir)
-- Gerenciamento de autores
-- Cadastro e autenticação de usuários
-- Filtragem e pesquisa de livros por título e autor
+- 🎓 Inscrições de participantes nos programas.
+- 🏢 Informações sobre os bootcamps disponíveis.
+- 🤝 Parcerias com empresas que oferecem oportunidades de contratação para mulheres treinadas no Damas Tech.
 
-## Tecnologias Utilizadas
+### 🎯 Objetivos do projeto:
+1. Facilitar o acesso a programas de treinamento focados no público feminino.
+2. Conectar empresas com participantes qualificadas para o mercado de trabalho.
+3. Gerenciar informações sobre inscrições, programas e status de conclusão de cursos.
+
+### 🔑 Funcionalidades principais:
+- ✅ Cadastro e autenticação de usuárias.
+- ✅ Cadastro e autenticação de empresas.
+
+## 🛠️ Tecnologias Utilizadas
 
 - **[Django 5.1](https://www.djangoproject.com/)** - Framework web para o backend.
 - **[Django REST Framework](https://www.django-rest-framework.org/)** - Biblioteca para a criação de APIs RESTful com Django.
 - **[SQLite3](https://www.sqlite.org/index.html)** - Banco de dados utilizado no projeto.
 - **[Python 3.12.5](https://www.python.org/)** - Linguagem de programação.
 - **[Docker](https://www.docker.com/)** (opcional) - Para containerização do ambiente de desenvolvimento.
+- **[Pytest](https://docs.pytest.org/en/7.1.x/)** - Ferramenta para testes automatizados.
 
-## Instalação e Configuração
+## 📥 Instalação e Configuração
 
 1. Clone o repositório:
     ```bash
-    git clone https://github.com/seu-usuario/seu-projeto.git
-    cd seu-projeto
+    git clone https://github.com/Damas-Tech/api_damas_tech.git
+    cd api_damas_tech
     ```
 
-2. Crie e ative um ambiente virtual (opcional, mas recomendado):
+2. Crie e ative um ambiente virtual (opcional):
     ```bash
     python -m venv venv
     source venv/bin/activate  # No Linux/MacOS
@@ -61,58 +74,75 @@ O projeto de API de Gestão de Biblioteca tem como objetivo fornecer uma platafo
     python manage.py runserver
     ```
 
-## Endpoints Principais
+## 🌳 Estratégia de Branches
+
+Para garantir um fluxo de trabalho eficiente e colaborativo, utilizamos uma estratégia de branches na organização **Damas Tech**. A principal branch para desenvolvimento é a `develop`, que será utilizada para o desenvolvimento tanto do frontend quanto do backend. 
+
+### 🏗️ Fluxo de Trabalho:
+
+1. **Branch Principal**:
+   - `develop`: Branch onde todas as novas funcionalidades e correções de bugs são integradas. É a base para os desenvolvimentos do frontend e backend.
+
+2. **Criação de Branches de Funcionalidades**:
+   - Ao iniciar uma nova feature ou correção, crie uma nova branch a partir da `develop`:
+     ```bash
+     git checkout develop
+     git checkout -b minha-nova-feature
+     ```
+
+3. **Merge e Pull Request**:
+   - Após concluir o desenvolvimento na branch da funcionalidade, faça um pull request para a `develop` para revisão e integração.
+
+4. **Sincronização**:
+   - Mantenha sua branch atualizada com a `develop` para evitar conflitos:
+     ```bash
+     git checkout develop
+     git pull origin develop
+     git checkout minha-nova-feature
+     git rebase develop
+     ```
+
+## 📌 Endpoints Principais
 
 Abaixo estão alguns dos principais endpoints da API:
 
-- **/api/books/** - Endpoint para listar ou criar novos livros.
-- **/api/books/{id}/** - Endpoint para visualizar, atualizar ou excluir um livro específico.
-- **/api/authors/** - Endpoint para listar ou criar autores.
-- **/api/users/** - Gerenciamento de usuários (registro, login).
+- **GET /api/programs/** - Listar todos os programas disponíveis.
+- **POST /api/programs/** - Criar um novo programa.
+- **GET /api/partners/** - Listar empresas parceiras.
+- **POST /api/partners/** - Cadastrar uma nova empresa parceira.
+- **POST /api/signup/** - Registrar uma nova usuária.
 
 Para mais detalhes sobre todos os endpoints, consulte a [Documentação da API](#links-úteis).
 
-## Como Contribuir
+## 👩‍💻 Equipe
 
-1. Faça um fork do projeto
-2. Crie uma nova branch:
-    ```bash
-    git checkout -b minha-nova-feature
-    ```
-3. Faça suas modificações e faça o commit:
-    ```bash
-    git commit -m 'Adiciona nova feature'
-    ```
-4. Envie para o repositório remoto:
-    ```bash
-    git push origin minha-nova-feature
-    ```
-5. Abra um Pull Request para análise.
+- **Desenvolvedora Backend**: [Andressa Silva](https://github.com/AndressaSilva0) 🌟
+- **Desenvolvedor Backend**: [Jonathan Júnior](https://github.com/Jonhyyplay) 🌟
+- **Desenvolvedor Backend**: [Erick Vinicius](https://github.com/EriiSy) 🌟
+- **Scrum Master**: [Aloisio Gonçalves](https://github.com/Aloisio-Doerl) 🌟
 
-## Equipe
+## 🔗 Links Úteis
 
-- **Desenvolvedor Backend**: [Seu Nome](https://github.com/seu-usuario)
-- **Gerente de Projeto**: [Nome do Gerente](https://www.linkedin.com/in/nome-do-gerente/)
-- **Testes e QA**: [Nome QA](https://www.linkedin.com/in/nome-do-qa/)
-
-## Links Úteis
-
-- [Jira do Projeto](https://seu-projeto-jira-link.com)
+- [API Damas Tech - GitHub](https://github.com/Damas-Tech/api_damas_tech/)
+- [Front Damas Tech - GitHub](https://github.com/Damas-Tech/fronten_damas_tech/)
+- [Jira do Projeto](https://damastech.atlassian.net/jira/people/team/cfb1ad1f-4d03-4470-bf40-58ff1017b1a0)
 - [Documentação da API - Postman](https://link-postman-documentacao.com)
 - [Django REST Framework](https://www.django-rest-framework.org/)
 - [Documentação do Django](https://docs.djangoproject.com/)
 
-## Licença
+## Dashboard
+  ## Estatísticas
+* **Issues:** [![GitHub issues](https://img.shields.io/github/issues/Damas-Tech/api_damas_tech.svg)](https://github.com/Damas-Tech/api_damas_tech/issues)
+* **Pull Requests:** [![GitHub pull requests](https://img.shields.io/github/pulls/Damas-Tech/api_damas_tech.svg)](https://github.com/Damas-Tech/api_damas_tech/pulls)
+
+## Status do Projeto
+* **Build:** [![CI/CD pipeline status](https://github.com/Damas-Tech/api_damas_tech/actions/workflows/main.yml/badge.svg)](https://github.com/Damas-Tech/api_damas_tech/actions)
+* **Cobertura de código:** [![codecov](https://codecov.io/gh/Damas-Tech/api_damas_tech/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/Damas-Tech/api_damas_tech)
+
+## 📝 Licença
 
 Este projeto está licenciado sob a [MIT License](https://opensource.org/licenses/MIT) - veja o arquivo LICENSE para mais detalhes.
 
-## Sugestões Finais
-
-- **Testes Automatizados**: O projeto já inclui alguns testes com Pytest. É recomendável expandir a cobertura de testes conforme o desenvolvimento.
-- **Deploy com Docker**: Para ambientes de produção, recomenda-se o uso de containers Docker para facilitar o deploy. Verifique o arquivo `Dockerfile` para mais detalhes.
-- **Segurança**: Certifique-se de configurar variáveis de ambiente para armazenar dados sensíveis, como chaves secretas e credenciais de banco de dados.
-
 ---
 
-Desenvolvido com 💻 por [Seu Nome](https://github.com/seu-usuario).
-
+Desenvolvido com 💻 por [Andressa Silva](https://github.com/AndressaSilva0).
