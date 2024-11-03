@@ -31,7 +31,6 @@ class EmpresaSerializer(serializers.ModelSerializer):
         validated_data.pop('confirmar_senha')
         empresa = Empresa(
             nome=validated_data['nome'],
-            razao_social=validated_data['razao_social'],
             cnpj=validated_data['cnpj'],
             email=validated_data['email']
         )

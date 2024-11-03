@@ -3,7 +3,7 @@ from .models import Usuario
 
 class UsuarioSerializer(serializers.ModelSerializer):
     confirmar_senha = serializers.CharField(write_only=True)
-    senha = serializers.CharField(source='password', write_only=True)  # Mapeia 'senha' para 'password'
+    senha = serializers.CharField(write_only=True) 
 
     class Meta:
         model = Usuario
@@ -27,19 +27,26 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('confirmar_senha')
-        user = Usuario(
-            nome=validated_data['nome'],
-            sobrenome=validated_data['sobrenome'],
-            cpf=validated_data['cpf'],
-            email=validated_data['email']
-        )
-        user.set_password(validated_data['senha'])  # Use 'senha' aqui
+        senha = validated_data.pop('senha')
+        
+        user = Usuario(**validated_data)
+        user.set_password(senha)  
         user.save()
         return user
 
 class UsuarioLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    senha = serializers.CharField(source='password')  # Mapeia 'senha' para 'password'
+    email = serializers.EmailField(required=True)
+    senha = serializers.CharField(required=True, write_only=True)
 
     def validate(self, data):
+        email = data.get('email')
+        senha = data.get('senha')
+
+        if not Usuario.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Usuário não encontrado.")
+
+        usuario = Usuario.objects.get(email=email)
+        if not usuario.check_password(senha):
+            raise serializers.ValidationError("Senha incorreta.")
+
         return data
