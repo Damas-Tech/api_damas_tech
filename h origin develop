@@ -1,0 +1,17 @@
+[33mcommit 7a1f6d48cb58acbe7d9db0c0d8870212b2f0ed0a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdevelop[m[33m)[m
+Author: Andressa Silva <andressasp68@gmail.com>
+Date:   Sat Nov 2 04:14:41 2024 -0300
+
+    Implementação do login e cadastro da empresa e usuária
+
+[33mcommit c6631501d86ef051ad2460ab96d41ba98de45cda[m[33m ([m[1;31morigin/develop[m[33m)[m
+Author: Andressa Silva <98890268+AndressaSilva0@users.noreply.github.com>
+Date:   Mon Oct 21 20:57:13 2024 -0300
+
+    Update README.md
+
+[33mcommit 46ea7bc8c807060fa1c55f73ac6e3f2f9aab2c69[m
+Author: Andressa Silva <andressasp68@gmail.com>
+Date:   Mon Oct 21 20:52:17 2024 -0300
+
+    Initial commit
