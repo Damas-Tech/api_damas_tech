@@ -16,4 +16,14 @@ class Module extends Model
     {
         return $this->hasMany(UserModuleProgress::class, 'module_id');
     }
+
+    public function materials()
+    {
+        return $this->hasMany(ModuleMaterial::class);
+    }
+
+    public function videos()
+    {
+        return $this->hasMany(ModuleVideo::class);
+    }
 }
