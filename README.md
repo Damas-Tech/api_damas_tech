@@ -1,6 +1,6 @@
 # 🚀 Damas.Tech API
 
-> Plataforma de educação tecnológica com foco em desenvolvimento de talentos e conexão entre empresas e profissionais.
+> Plataforma de educação tecnológica com foco em desenvolvimento de talentos femininos e conexão entre empresas e profissionais.
 
 [![Laravel](https://img.shields.io/badge/Laravel-11.x-red.svg)](https://laravel.com)
 [![PHP](https://img.shields.io/badge/PHP-8.3+-blue.svg)](https://php.net)
