@@ -1,7 +1,3 @@
-<?php
-@component('mail::message')
-# Introduction
-
 @component('mail::message')
 # Olá {{ $user->name }}!
 
