@@ -28,6 +28,13 @@ class CourseContentService
     // 🔹 Adiciona vídeo
     public function addVideo($moduleId, $title, $url, $duration)
     {
+
+        if ($fileOrLink instanceof UploadedFile) {
+            $path = $fileOrLink->store("modules/$moduleId/videos", 'public');
+        } else {
+            $path = $fileOrLink;
+        }
+
         return ModuleVideo::create([
             'module_id' => $moduleId,
             'title' => $title,
