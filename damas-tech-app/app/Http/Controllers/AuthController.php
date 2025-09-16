@@ -70,7 +70,6 @@ class AuthController extends Controller
             'company' => $result['company']
         ], 201);
     }
-    }
 
     public function login(Request $request)
     {

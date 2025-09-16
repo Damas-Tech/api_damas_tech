@@ -17,5 +17,14 @@ Route::prefix('auth')->group(function () {
         Route::get('/courses/{courseId}/progress', [CourseProgressController::class, 'viewCourseProgress']);
     });
 
+    Route::middleware(['auth:sanctum', 'role:company'])->get('/dashboard/company', [DashboardController::class, 'companyDashboard']);
+    Route::middleware(['auth:sanctum', 'role:user'])->get('/dashboard/user', [DashboardController::class, 'userDashboard']);
 
+    Route::middleware(['auth:sanctum', 'role:user'])->post('/progress/{type}/{id}/complete', function ($type, $id, \App\Services\UserProgressService $service) {
+        $class = $type === 'video' ? \App\Models\ModuleVideo::class : \App\Models\ModuleMaterial::class;
+        $progressable = $class::findOrFail($id);
+        $progress = $service->markAsCompleted($progressable);
+
+        return response()->json($progress);
+    });
 });
