@@ -123,6 +123,20 @@ paths:
         "200":
           description: Logout realizado com sucesso
 
+  /api/auth/me:
+    get:
+      summary: Dados da usuária/empresa autenticada
+      tags: [Autenticação]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Dados do usuário autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
   /api/auth/courses/{courseId}/start:
     post:
       summary: Inicia curso para a usuária autenticada
@@ -347,6 +361,213 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MatchResult"
+
+  /api/auth/users:
+    get:
+      summary: Lista usuárias (candidatas) com filtros
+      description: |
+        Disponível para contas com role `company`. Permite filtrar por tecnologias e cultura.
+
+        Exemplos de uso:
+        - `GET /api/auth/users?tech_stack=php,laravel&culture_tags=inclusiva,remota`
+      tags: [Usuárias]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: query
+          name: tech_stack
+          required: false
+          schema:
+            type: string
+            example: "php,laravel"
+        - in: query
+          name: culture_tags
+          required: false
+          schema:
+            type: string
+            example: "remota,inclusiva"
+      responses:
+        "200":
+          description: Lista paginada de usuárias
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+
+  /api/auth/users/{userId}:
+    get:
+      summary: Detalhes de uma usuária
+      tags: [Usuárias]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Usuária encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: Usuária não encontrada
+
+    put:
+      summary: Atualiza perfil da própria usuária
+      tags: [Usuárias]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfileRequest"
+      responses:
+        "200":
+          description: Perfil atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    patch:
+      summary: Atualiza parcialmente o perfil da própria usuária
+      tags: [Usuárias]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserProfileRequest"
+      responses:
+        "200":
+          description: Perfil atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+    delete:
+      summary: Exclui a própria conta de usuária
+      tags: [Usuárias]
+      security:
+        - sanctumAuth: []
+      responses:
+        "204":
+          description: Conta excluída com sucesso
+
+  /api/auth/companies:
+    get:
+      summary: Lista empresas com filtros
+      tags: [Empresas]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: query
+          name: tech_stack
+          required: false
+          schema:
+            type: string
+            example: "php,laravel"
+        - in: query
+          name: culture_tags
+          required: false
+          schema:
+            type: string
+            example: "remota,inclusiva"
+      responses:
+        "200":
+          description: Lista paginada de empresas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Company"
+
+  /api/auth/companies/{companyId}:
+    get:
+      summary: Detalhes de uma empresa
+      tags: [Empresas]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: companyId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Empresa encontrada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+        "404":
+          description: Empresa não encontrada
+
+    put:
+      summary: Atualiza perfil da própria empresa
+      tags: [Empresas]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCompanyProfileRequest"
+      responses:
+        "200":
+          description: Empresa atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+
+    patch:
+      summary: Atualiza parcialmente o perfil da própria empresa
+      tags: [Empresas]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCompanyProfileRequest"
+      responses:
+        "200":
+          description: Empresa atualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+
+    delete:
+      summary: Exclui a própria empresa vinculada à conta autenticada
+      tags: [Empresas]
+      security:
+        - sanctumAuth: []
+      responses:
+        "204":
+          description: Empresa excluída com sucesso
 
 components:
   securitySchemes:
@@ -615,6 +836,32 @@ components:
           items:
             type: string
         culture_missing:
+          type: array
+          items:
+            type: string
+
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        tech_stack:
+          type: array
+          items:
+            type: string
+        culture_tags:
+          type: array
+          items:
+            type: string
+
+    UpdateCompanyProfileRequest:
+      type: object
+      properties:
+        tech_stack:
+          type: array
+          items:
+            type: string
+        culture_tags:
           type: array
           items:
             type: string

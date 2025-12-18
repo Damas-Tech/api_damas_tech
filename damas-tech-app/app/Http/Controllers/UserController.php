@@ -118,4 +118,28 @@ class UserController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Exclui a própria conta de usuária autenticada.
+     */
+    public function destroy(User $user)
+    {
+        try {
+            $authUser = Auth::user();
+
+            if (!$authUser || $authUser->id !== $user->id) {
+                return response()->json([
+                    'message' => ErrorMessages::get('users.forbidden'),
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            $user->delete();
+
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => ErrorMessages::get('generic.unexpected_error'),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

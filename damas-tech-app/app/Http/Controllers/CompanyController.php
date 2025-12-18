@@ -107,4 +107,28 @@ class CompanyController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Exclui a própria empresa vinculada ao usuário autenticado.
+     */
+    public function destroy(Company $company)
+    {
+        try {
+            $authUser = Auth::user();
+
+            if (!$authUser || $authUser->id !== $company->users_id) {
+                return response()->json([
+                    'message' => ErrorMessages::get('companies.forbidden'),
+                ], Response::HTTP_FORBIDDEN);
+            }
+
+            $company->delete();
+
+            return response()->json(null, Response::HTTP_NO_CONTENT);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => ErrorMessages::get('generic.unexpected_error'),
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

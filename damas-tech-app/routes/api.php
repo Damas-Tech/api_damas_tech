@@ -33,8 +33,10 @@ Route::prefix('auth')->group(function () {
     Route::post('/register/user', [AuthController::class, 'registerUser']);
     Route::post('/register/company', [AuthController::class, 'registerCompany']);
     Route::post('/login', [AuthController::class, 'login']);
-
-    Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
+    });
     Route::middleware(['auth:sanctum', 'role:company'])->group(function () {
         // Dashboard da empresa
         // Route::get('/company/dashboard', [CompanyController::class, 'dashboard']);
@@ -63,9 +65,12 @@ Route::prefix('auth')->group(function () {
         Route::get('/companies', [CompanyController::class, 'index']);
         Route::get('/companies/{company}', [CompanyController::class, 'show']);
 
-        // Atualização de perfil da própria usuária e da própria empresa
+        // Atualização e exclusão de perfil da própria usuária e empresa
         Route::match(['put', 'patch'], '/users/{user}', [UserController::class, 'update']);
+        Route::delete('/users/{user}', [UserController::class, 'destroy']);
+
         Route::match(['put', 'patch'], '/companies/{company}', [CompanyController::class, 'update']);
+        Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
     });
 
     // Vagas recomendadas para a usuária
