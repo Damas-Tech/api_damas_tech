@@ -21,6 +21,12 @@ class ErrorMessages
 
         'materials.not_found' => 'Material não encontrado.',
 
+        'users.not_found' => 'Usuária não encontrada.',
+        'users.forbidden' => 'Você não tem permissão para acessar ou alterar esta usuária.',
+
+        'companies.not_found' => 'Empresa não encontrada.',
+        'companies.forbidden' => 'Você não tem permissão para acessar ou alterar esta empresa.',
+
         'generic.unexpected_error' => 'Ocorreu um erro inesperado. Nossa equipe já foi notificada.',
     ];
 

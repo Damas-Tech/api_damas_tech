@@ -7,6 +7,8 @@ use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobOpportunityController;
 use App\Http\Controllers\MatchController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CompanyController;
 
 // Health-check simples para monitoramento / load balancer
 Route::get('/health', function () {
@@ -41,6 +43,10 @@ Route::prefix('auth')->group(function () {
         Route::get('/company/jobs', [JobOpportunityController::class, 'index']);
         Route::post('/company/jobs', [JobOpportunityController::class, 'store']);
         Route::get('/company/jobs/{jobId}/matches', [MatchController::class, 'jobCandidates']);
+
+        // Lista de usuárias (candidatas) com filtros por tecnologias e cultura
+        Route::get('/users', [UserController::class, 'index']);
+        Route::get('/users/{user}', [UserController::class, 'show']);
     });
 
     Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
@@ -51,6 +57,16 @@ Route::prefix('auth')->group(function () {
 
     Route::middleware(['auth:sanctum', 'role:company'])->get('/dashboard/company', [DashboardController::class, 'companyDashboard']);
     Route::middleware(['auth:sanctum', 'role:user'])->get('/dashboard/user', [DashboardController::class, 'userDashboard']);
+
+    // Listagem e detalhes de empresas (para qualquer usuária autenticada)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/companies', [CompanyController::class, 'index']);
+        Route::get('/companies/{company}', [CompanyController::class, 'show']);
+
+        // Atualização de perfil da própria usuária e da própria empresa
+        Route::match(['put', 'patch'], '/users/{user}', [UserController::class, 'update']);
+        Route::match(['put', 'patch'], '/companies/{company}', [CompanyController::class, 'update']);
+    });
 
     // Vagas recomendadas para a usuária
     Route::middleware(['auth:sanctum', 'role:user'])->get('/user/matches/jobs', [MatchController::class, 'userJobs']);

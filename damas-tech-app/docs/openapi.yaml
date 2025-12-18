@@ -6,12 +6,38 @@ info:
     API da plataforma damas.tech para educação tecnológica, empregabilidade feminina e banco de talentos inteligente.
 
 servers:
+  - url: https://apidamastech-production.up.railway.app
+    description: Produção (Railway)
   - url: https://api.damas.tech
-    description: Produção
+    description: Produção (domínio próprio - futuro)
   - url: http://localhost:8000
     description: Desenvolvimento local
 
 paths:
+  /:
+    get:
+      summary: Informações básicas da API
+      tags: [Infra]
+      responses:
+        "200":
+          description: Metadados da API e links úteis
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    example: Damas Tech API
+                  status:
+                    type: string
+                    example: ok
+                  health:
+                    type: string
+                    example: https://apidamastech-production.up.railway.app/api/health
+                  docs:
+                    type: string
+                    example: https://apidamastech-production.up.railway.app/api/docs/openapi
   /api/health:
     get:
       summary: Health-check da API
