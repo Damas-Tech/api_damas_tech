@@ -1,12 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use App\Models\User;
-use App\Models\Company;
 use App\Services\AuthService;
+use App\Http\Resources\UserResource;
+use App\Support\ErrorMessages;
 
 class AuthController extends Controller
 {
@@ -26,17 +26,13 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'user',
-        ]);
+        // Delegamos a criação e disparo de e-mail para o service
+        $user = $this->authService->registerUser($request->only(['name', 'email', 'password']));
 
-        $user = $this->authService->registerUser($request->only(['name','email','password']));
-        SendWelcomeEmail::dispatch($user);
-
-        return response()->json(['message' => 'Usuário registrado com sucesso', 'user' => $user], 201);
+        return (new UserResource($user))
+            ->additional(['message' => 'Usuário registrado com sucesso'])
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function registerCompany(Request $request)
@@ -48,27 +44,16 @@ class AuthController extends Controller
             'cnpj' => 'required|string|unique:companies,cnpj',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'company',
-        ]);
+        // Delegamos criação de usuário, empresa e e-mail de boas-vindas para o service
+        $result = $this->authService->registerCompany($request->only(['name', 'email', 'password', 'cnpj']));
 
-        $company = Company::create([
-            'users_id' => $user->id,
-            'cnpj' => $request->cnpj,
-        ]);
-
-        SendWelcomeEmail::dispatch($user);
-
-        $result = $this->authService->registerCompany($request->only(['name','email','password','cnpj']));
-
-        return response()->json([
-            'message' => 'Empresa registrada com sucesso',
-            'user' => $result['user'],
-            'company' => $result['company']
-        ], 201);
+        return (new UserResource($result['user']))
+            ->additional([
+                'message' => 'Empresa registrada com sucesso',
+                'company' => $result['company'],
+            ])
+            ->response()
+            ->setStatusCode(201);
     }
 
     public function login(Request $request)
@@ -78,21 +63,20 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        try {
+            $result = $this->authService->login($request->only(['email', 'password']));
+        } catch (\Exception $e) {
             throw ValidationException::withMessages([
-                'email' => ['As credenciais são inválidas.'],
+                'email' => [ErrorMessages::get('auth.invalid_credentials')],
             ]);
         }
 
-        $token = $user->createToken('api-token')->plainTextToken;
-
-        return response()->json([
-            'message' => 'Login realizado com sucesso',
-            'user' => $user,
-            'token' => $token
-        ]);
+        return (new UserResource($result['user']))
+            ->additional([
+                'message' => 'Login realizado com sucesso',
+                'token' => $result['token'],
+            ])
+            ->response();
     }
 
     public function logout(Request $request)

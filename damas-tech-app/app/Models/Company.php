@@ -1,11 +1,17 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
-    protected $fillable = ['users_id', 'cnpj'];
+    protected $fillable = ['users_id', 'cnpj', 'tech_stack', 'culture_tags'];
+
+    protected $casts = [
+        'tech_stack' => 'array',
+        'culture_tags' => 'array',
+    ];
 
     public function user()
     {

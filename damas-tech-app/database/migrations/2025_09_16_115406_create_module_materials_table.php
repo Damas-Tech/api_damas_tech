@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('module_materials', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('module_id')->constrained()->onDelete('cascade');
-            $table->string('type', 50)->default('pdf');
-            $table->string('url');
-            $table->timestamps();
-        });
+        // Esta migration foi substituída por 2025_09_16_123859_create_module_materials_table
+        // Mantemos o arquivo apenas para histórico, sem recriar a tabela.
     }
 
     /**

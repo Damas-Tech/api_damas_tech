@@ -1,10 +1,12 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\User;
 use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
 use App\Jobs\SendWelcomeEmail;
+use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
@@ -31,21 +33,23 @@ class AuthService
      */
     public function registerCompany(array $data): array
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => 'company',
-        ]);
+        return DB::transaction(function () use ($data) {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'role' => 'company',
+            ]);
 
-        $company = Company::create([
-            'users_id' => $user->id,
-            'cnpj' => $data['cnpj'],
-        ]);
+            $company = Company::create([
+                'users_id' => $user->id,
+                'cnpj' => $data['cnpj'],
+            ]);
 
-        SendWelcomeEmail::dispatch($user);
+            SendWelcomeEmail::dispatch($user);
 
-        return ['user' => $user, 'company' => $company];
+            return ['user' => $user, 'company' => $company];
+        });
     }
 
     /**

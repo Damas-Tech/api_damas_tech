@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\UserCourseProgress;
@@ -32,6 +33,10 @@ class CourseProgressService
             ['completed' => true, 'completed_at' => Carbon::now()]
         );
 
+        // Após completar um módulo, verificamos se o curso foi concluído
+        $module = Module::findOrFail($moduleId);
+        $this->handleCourseCompletionSideEffects($userId, $module->course_id);
+
         return $progress;
     }
 
@@ -42,14 +47,32 @@ class CourseProgressService
     {
         $modules = Module::where('course_id', $courseId)->count();
         $completedModules = UserModuleProgress::where('users_id', $userId)
-            ->whereHas('module', function($q) use ($courseId) {
+            ->whereHas('module', function ($q) use ($courseId) {
                 $q->where('course_id', $courseId);
             })->where('completed', true)
             ->count();
 
-            UpdateTalentPoolStatus::dispatch($progress);
-            SendCourseCompletedEmail::dispatch($progress->user, $courseId);
-
         return $modules > 0 && $modules === $completedModules;
+    }
+
+    /**
+     * Dispara efeitos colaterais quando um curso é concluído
+     */
+    protected function handleCourseCompletionSideEffects($userId, $courseId): void
+    {
+        if (! $this->isCourseCompleted($userId, $courseId)) {
+            return;
+        }
+
+        $progress = UserCourseProgress::firstOrCreate([
+            'users_id' => $userId,
+            'course_id' => $courseId,
+        ], [
+            'started_at' => Carbon::now(),
+        ]);
+
+        // Atualiza status do Talent Pool e envia e-mail de conclusão
+        UpdateTalentPoolStatus::dispatch($progress);
+        SendCourseCompletedEmail::dispatch($progress->user, $courseId);
     }
 }

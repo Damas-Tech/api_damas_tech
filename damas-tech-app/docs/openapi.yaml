@@ -1,0 +1,594 @@
+openapi: 3.0.3
+info:
+  title: Damas.Tech API
+  version: 1.0.0
+  description: |
+    API da plataforma damas.tech para educação tecnológica, empregabilidade feminina e banco de talentos inteligente.
+
+servers:
+  - url: https://api.damas.tech
+    description: Produção
+  - url: http://localhost:8000
+    description: Desenvolvimento local
+
+paths:
+  /api/health:
+    get:
+      summary: Health-check da API
+      tags: [Infra]
+      responses:
+        "200":
+          description: API saudável
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /api/auth/register/user:
+    post:
+      summary: Registro de usuária
+      tags: [Autenticação]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterUserRequest"
+      responses:
+        "201":
+          description: Usuária criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSuccessUserResponse"
+
+  /api/auth/register/company:
+    post:
+      summary: Registro de empresa
+      tags: [Autenticação]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterCompanyRequest"
+      responses:
+        "201":
+          description: Empresa criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSuccessCompanyResponse"
+
+  /api/auth/login:
+    post:
+      summary: Login de usuária ou empresa
+      tags: [Autenticação]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login realizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthLoginResponse"
+        "422":
+          description: Credenciais inválidas
+
+  /api/auth/logout:
+    post:
+      summary: Logout
+      tags: [Autenticação]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Logout realizado com sucesso
+
+  /api/auth/courses/{courseId}/start:
+    post:
+      summary: Inicia curso para a usuária autenticada
+      tags: [Cursos]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Progresso de curso criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCourseProgress"
+
+  /api/auth/modules/{moduleId}/complete:
+    post:
+      summary: Marca módulo como concluído
+      tags: [Cursos]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: moduleId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Progresso de módulo atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserModuleProgress"
+
+  /api/auth/courses/{courseId}/progress:
+    get:
+      summary: Consulta progresso de curso da usuária
+      tags: [Cursos]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Progresso encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCourseProgress"
+        "404":
+          description: Curso não encontrado para a usuária
+
+  /api/auth/modules/{moduleId}/materials:
+    get:
+      summary: Lista materiais de um módulo
+      tags: [Materiais]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: moduleId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de materiais
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModuleMaterial"
+
+    post:
+      summary: Cria material de módulo (empresa)
+      tags: [Materiais]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: moduleId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateModuleMaterialRequest"
+      responses:
+        "201":
+          description: Material criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModuleMaterial"
+
+  /api/auth/modules/{moduleId}/materials/{id}:
+    delete:
+      summary: Remove material de módulo
+      tags: [Materiais]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: moduleId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Material removido
+        "404":
+          description: Material não encontrado
+
+  /api/auth/dashboard/company:
+    get:
+      summary: Dashboard da empresa
+      tags: [Dashboard]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Estatísticas da empresa
+
+  /api/auth/dashboard/user:
+    get:
+      summary: Dashboard da usuária
+      tags: [Dashboard]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Progresso por curso
+
+  /api/auth/company/jobs:
+    get:
+      summary: Lista vagas da empresa autenticada
+      tags: [Vagas]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Lista de vagas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/JobOpportunity"
+
+    post:
+      summary: Cria vaga para a empresa autenticada
+      tags: [Vagas]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateJobOpportunityRequest"
+      responses:
+        "201":
+          description: Vaga criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobOpportunity"
+
+  /api/auth/company/jobs/{jobId}/matches:
+    get:
+      summary: Lista candidatas ranqueadas para uma vaga
+      tags: [Match]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Matches para a vaga
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchResult"
+
+  /api/auth/user/matches/jobs:
+    get:
+      summary: Lista vagas recomendadas para a usuária
+      tags: [Match]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Vagas recomendadas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MatchResult"
+
+components:
+  securitySchemes:
+    sanctumAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
+
+  schemas:
+    RegisterUserRequest:
+      type: object
+      required: [name, email, password, password_confirmation]
+      properties:
+        name:
+          type: string
+          example: Maria da Silva
+        email:
+          type: string
+          format: email
+          example: maria@example.com
+        password:
+          type: string
+          format: password
+          example: password
+        password_confirmation:
+          type: string
+          format: password
+          example: password
+
+    RegisterCompanyRequest:
+      allOf:
+        - $ref: "#/components/schemas/RegisterUserRequest"
+        - type: object
+          required: [cnpj]
+          properties:
+            cnpj:
+              type: string
+              example: "12345678000199"
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [user, company]
+        tech_stack:
+          type: array
+          items:
+            type: string
+        culture_tags:
+          type: array
+          items:
+            type: string
+
+    Company:
+      type: object
+      properties:
+        id:
+          type: integer
+        users_id:
+          type: integer
+        cnpj:
+          type: string
+        tech_stack:
+          type: array
+          items:
+            type: string
+        culture_tags:
+          type: array
+          items:
+            type: string
+
+    AuthSuccessUserResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/User"
+        message:
+          type: string
+
+    AuthSuccessCompanyResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/User"
+        company:
+          $ref: "#/components/schemas/Company"
+        message:
+          type: string
+
+    AuthLoginResponse:
+      allOf:
+        - $ref: "#/components/schemas/AuthSuccessUserResponse"
+        - type: object
+          properties:
+            token:
+              type: string
+
+    UserCourseProgress:
+      type: object
+      properties:
+        id:
+          type: integer
+        users_id:
+          type: integer
+        course_id:
+          type: integer
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    UserModuleProgress:
+      type: object
+      properties:
+        id:
+          type: integer
+        users_id:
+          type: integer
+        module_id:
+          type: integer
+        completed:
+          type: boolean
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    ModuleMaterial:
+      type: object
+      properties:
+        id:
+          type: integer
+        module_id:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+          enum: [video, pdf, doc, ppt, link]
+        file_path:
+          type: string
+          nullable: true
+        external_link:
+          type: string
+          nullable: true
+
+    CreateModuleMaterialRequest:
+      type: object
+      required: [module_id, title, type]
+      properties:
+        module_id:
+          type: integer
+        title:
+          type: string
+        type:
+          type: string
+          enum: [video, pdf, doc, ppt, link]
+        external_link:
+          type: string
+          nullable: true
+
+    JobOpportunity:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        tech_stack:
+          type: array
+          items:
+            type: string
+        culture_tags:
+          type: array
+          items:
+            type: string
+        location_type:
+          type: string
+          nullable: true
+        seniority:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [open, closed, draft]
+
+    CreateJobOpportunityRequest:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        tech_stack:
+          type: array
+          items:
+            type: string
+        culture_tags:
+          type: array
+          items:
+            type: string
+        location_type:
+          type: string
+          nullable: true
+        seniority:
+          type: string
+          nullable: true
+        status:
+          type: string
+          enum: [open, closed, draft]
+
+    MatchResult:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        job_id:
+          type: integer
+        score:
+          type: number
+          format: float
+        skill_score:
+          type: number
+          format: float
+        culture_score:
+          type: number
+          format: float
+        skills_matched:
+          type: array
+          items:
+            type: string
+        skills_missing:
+          type: array
+          items:
+            type: string
+        culture_matched:
+          type: array
+          items:
+            type: string
+        culture_missing:
+          type: array
+          items:
+            type: string
