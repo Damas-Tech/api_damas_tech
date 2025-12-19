@@ -1,6 +1,9 @@
 <?php
+
 namespace App\Services;
 
+use App\Models\ModuleMaterial;
+use App\Models\ModuleVideo;
 use App\Models\UserProgress;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,7 +15,7 @@ class UserProgressService
             [
                 'user_id' => Auth::id(),
                 'progressable_id' => $progressable->id,
-                'progressable_type' => get_class($progressable),
+                'progressable_type' => $progressable::class,
             ],
             ['completed' => true]
         );
@@ -24,14 +27,14 @@ class UserProgressService
         $totalItems = $course->modules->sum(fn($m) => $m->materials->count() + $m->videos->count());
 
         $completedItems = UserProgress::where('user_id', $userId)
-            ->whereIn('progressable_type', ['App\Models\ModuleMaterial', 'App\Models\ModuleVideo'])
+            ->whereIn('progressable_type', [ModuleMaterial::class, ModuleVideo::class])
             ->where('completed', true)
             ->count();
 
         return [
             'completed' => $completedItems,
             'total' => $totalItems,
-            'percentage' => $totalItems > 0 ? round(($completedItems / $totalItems) * 100, 2) : 0,
+            'percentage' => $totalItems > 0 ? round($completedItems / $totalItems * 100, 2) : 0,
         ];
     }
 }

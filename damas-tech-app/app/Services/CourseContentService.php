@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Module;
@@ -9,13 +10,12 @@ use Illuminate\Support\Facades\Storage;
 
 class CourseContentService
 {
-    // 🔹 Adiciona material (PDF, doc, link)
     public function addMaterial($moduleId, $fileOrLink, $type)
     {
         if ($fileOrLink instanceof UploadedFile) {
             $path = $fileOrLink->store('modules/' . $moduleId, 'public');
         } else {
-            $path = $fileOrLink; // se for link
+            $path = $fileOrLink;
         }
 
         return ModuleMaterial::create([
@@ -25,16 +25,8 @@ class CourseContentService
         ]);
     }
 
-    // 🔹 Adiciona vídeo
     public function addVideo($moduleId, $title, $url, $duration)
     {
-
-        if ($fileOrLink instanceof UploadedFile) {
-            $path = $fileOrLink->store("modules/$moduleId/videos", 'public');
-        } else {
-            $path = $fileOrLink;
-        }
-
         return ModuleVideo::create([
             'module_id' => $moduleId,
             'title' => $title,
@@ -43,13 +35,11 @@ class CourseContentService
         ]);
     }
 
-    // 🔹 Listar materiais de um módulo
     public function listMaterials($moduleId)
     {
         return ModuleMaterial::where('module_id', $moduleId)->get();
     }
 
-    // 🔹 Listar vídeos de um módulo
     public function listVideos($moduleId)
     {
         return ModuleVideo::where('module_id', $moduleId)->get();

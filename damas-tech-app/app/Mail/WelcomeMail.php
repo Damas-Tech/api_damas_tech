@@ -11,7 +11,7 @@ class WelcomeMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
+    private User $user;
 
     public function __construct(User $user)
     {
@@ -21,7 +21,9 @@ class WelcomeMail extends Mailable
     public function build()
     {
         return $this->subject('Bem-vindo(a) à Damas.Tech')
-                    ->markdown('emails.welcome');
+            ->markdown('emails.welcome')
+            ->with([
+                'user' => $this->user,
+            ]);
     }
 }
-

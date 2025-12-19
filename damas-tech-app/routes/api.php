@@ -2,13 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ModuleMaterialController;
+use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobOpportunityController;
 use App\Http\Controllers\MatchController;
+use App\Http\Controllers\ModuleMaterialController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\CompanyController;
 
 // Health-check simples para monitoramento / load balancer
 Route::get('/health', function () {
@@ -55,6 +56,7 @@ Route::prefix('auth')->group(function () {
         Route::post('/courses/{courseId}/start', [CourseProgressController::class, 'startCourse']);
         Route::post('/modules/{moduleId}/complete', [CourseProgressController::class, 'completeModule']);
         Route::get('/courses/{courseId}/progress', [CourseProgressController::class, 'viewCourseProgress']);
+        Route::get('/courses/{courseId}/certificate/download', [CertificateController::class, 'downloadCourseCertificate']);
     });
 
     Route::middleware(['auth:sanctum', 'role:company'])->get('/dashboard/company', [DashboardController::class, 'companyDashboard']);

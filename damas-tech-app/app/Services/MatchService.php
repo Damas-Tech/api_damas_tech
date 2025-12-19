@@ -8,9 +8,6 @@ use App\Models\TalentPool;
 
 class MatchService
 {
-    /**
-     * Calcula o match entre uma usuária e uma vaga.
-     */
     public function calculateUserJobMatch(User $user, JobOpportunity $job): array
     {
         [$userSkills, $jobSkills] = [$this->normalizeTags($user->tech_stack), $this->normalizeTags($job->tech_stack)];
@@ -23,8 +20,6 @@ class MatchService
 
         $skillScore = $this->scoreComponent($jobSkills, $skillsMatched);
         $cultureScore = $this->scoreComponent($jobCulture, $cultureMatched);
-
-        // Peso maior para habilidades técnicas, mas ainda considerando cultura
         $overallScore = $this->combineScores($skillScore, $cultureScore);
 
         return [
@@ -40,9 +35,6 @@ class MatchService
         ];
     }
 
-    /**
-     * Retorna candidatas ranqueadas para uma vaga de uma empresa.
-     */
     public function rankCandidatesForJob(JobOpportunity $job, int $limit = 20): array
     {
         $userIds = TalentPool::where('company_id', $job->company_id)
@@ -66,9 +58,6 @@ class MatchService
         return array_slice($matches, 0, $limit);
     }
 
-    /**
-     * Retorna vagas ranqueadas para uma usuária.
-     */
     public function rankJobsForUser(User $user, int $limit = 20): array
     {
         $companyIds = TalentPool::where('users_id', $user->id)
@@ -80,7 +69,7 @@ class MatchService
 
         $jobsQuery = JobOpportunity::query()->where('status', 'open');
 
-        if (! empty($companyIds)) {
+        if ($companyIds !== []) {
             $jobsQuery->whereIn('company_id', $companyIds);
         }
 
@@ -90,7 +79,6 @@ class MatchService
         foreach ($jobs as $job) {
             $match = $this->calculateUserJobMatch($user, $job);
 
-            // Ignora matches com score zero (sem nenhuma compatibilidade)
             if ($match['score'] > 0) {
                 $matches[] = $match;
             }
@@ -103,9 +91,6 @@ class MatchService
         return array_slice($matches, 0, $limit);
     }
 
-    /**
-     * Normaliza tags (string|array|null) em um array de strings minúsculas e sem espaços.
-     */
     protected function normalizeTags($value): array
     {
         if (is_null($value)) {
@@ -142,7 +127,6 @@ class MatchService
 
     protected function combineScores(float $skillScore, float $cultureScore): float
     {
-        // Sem cultura definida, usa só skill; sem skills, usa só cultura
         if ($skillScore === 0.0 && $cultureScore === 0.0) {
             return 0.0;
         }
@@ -155,7 +139,6 @@ class MatchService
             return $cultureScore;
         }
 
-        // Combinação ponderada: 70% skills, 30% cultura
         return round(($skillScore * 0.7) + ($cultureScore * 0.3), 2);
     }
 }

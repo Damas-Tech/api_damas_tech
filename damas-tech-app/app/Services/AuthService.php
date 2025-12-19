@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
-    /**
-     * Cadastra um usuário comum
-     */
     public function registerUser(array $data): User
     {
         $user = User::create([
@@ -22,15 +19,11 @@ class AuthService
             'role' => 'user',
         ]);
 
-        // Dispara e-mail de boas-vindas
         SendWelcomeEmail::dispatch($user);
 
         return $user;
     }
 
-    /**
-     * Cadastra uma empresa
-     */
     public function registerCompany(array $data): array
     {
         return DB::transaction(function () use ($data) {
@@ -52,9 +45,6 @@ class AuthService
         });
     }
 
-    /**
-     * Login de usuário ou empresa
-     */
     public function login(array $data): array
     {
         $user = User::where('email', $data['email'])->first();

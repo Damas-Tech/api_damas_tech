@@ -11,8 +11,8 @@ class CourseCompletedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $user;
-    public $courseId;
+    private User $user;
+    private int|string $courseId;
 
     public function __construct(User $user, $courseId)
     {
@@ -23,6 +23,10 @@ class CourseCompletedMail extends Mailable
     public function build()
     {
         return $this->subject('Curso Concluído!')
-                    ->markdown('emails.course_completed');
+            ->markdown('emails.course_completed')
+            ->with([
+                'user' => $this->user,
+                'courseId' => $this->courseId,
+            ]);
     }
 }

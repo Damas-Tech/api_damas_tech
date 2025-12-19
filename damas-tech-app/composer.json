@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1"
@@ -21,8 +22,10 @@
         "laravel/sail": "^1.41",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
+        "nunomaduro/phpinsights": "^2.13",
         "pestphp/pest": "^3.8",
-        "pestphp/pest-plugin-laravel": "^3.2"
+        "pestphp/pest-plugin-laravel": "^3.2",
+        "nunomaduro/phpinsights": "^2.13"
     },
     "autoload": {
         "psr-4": {
@@ -71,6 +74,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": false,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }
