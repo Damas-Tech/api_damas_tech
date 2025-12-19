@@ -1,419 +1,324 @@
-# 🚀 Damas.Tech API
+# 🚀 Damas Tech API
 
-> Plataforma de educação tecnológica com foco em desenvolvimento de talentos femininos e conexão entre empresas e profissionais.
+> Plataforma de educação, comunidade e empregabilidade para mulheres na tecnologia.
 
-[![Laravel](https://img.shields.io/badge/Laravel-11.x-red.svg)](https://laravel.com)
-[![PHP](https://img.shields.io/badge/PHP-8.3+-blue.svg)](https://php.net)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-4A0676?logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-%5E8.2-35055C?logo=php&logoColor=white)](https://php.net)
+[![Docs](https://img.shields.io/badge/Docs-OpenAPI_3-51139C)](damas-tech-app/docs/openapi.yaml)
+[![Style](https://img.shields.io/badge/Quality-PHP_Insights_~90%25-E113FC)](#qualidade-e-boas-práticas)
+[![License](https://img.shields.io/badge/License-MIT-1E1E1E)](LICENSE)
+
+---
 
 ## 📋 Índice
 
 - [Sobre o Projeto](#sobre-o-projeto)
 - [Funcionalidades](#funcionalidades)
 - [Tecnologias](#tecnologias)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação](#instalação)
+- [Ambiente Local](#ambiente-local)
+- [Instalação Rápida](#instalação-rápida)
 - [Configuração](#configuração)
-- [Uso](#uso)
-- [API Endpoints](#api-endpoints)
+- [Fluxos Principais da API](#fluxos-principais-da-api)
 - [Estrutura do Projeto](#estrutura-do-projeto)
-- [Status do Desenvolvimento](#status-do-desenvolvimento)
-- [Boas Práticas](#boas-práticas)
+- [Qualidade e Boas Práticas](#qualidade-e-boas-práticas)
 - [Contribuição](#contribuição)
 - [Licença](#licença)
 
+---
+
 ## 🎯 Sobre o Projeto
 
-A **Damas.Tech API** é uma plataforma educacional que conecta empresas e profissionais através de cursos de tecnologia. O sistema permite que empresas criem talent pools, usuários façam cursos e sejam avaliados, criando um ecossistema de desenvolvimento profissional.
+A **Damas Tech API** é o backend da plataforma que une **educação em tecnologia** e **empregabilidade feminina**.
 
-### Principais Objetivos
+Ela oferece trilhas de estudo, acompanhamento de progresso, geração de certificados e um motor de **match** entre
+talentos e vagas de empresas, levando em conta tanto **stack técnica** quanto **cultura**.
 
-- 🎓 **Educação**: Oferecer cursos de alta qualidade em tecnologia
-- 🤝 **Conexão**: Conectar empresas com talentos qualificados
-- 📊 **Avaliação**: Sistema de progresso e avaliação de competências
-- 🚀 **Crescimento**: Impulsionar carreiras em tecnologia
+### Objetivos
+
+- **Educação** – trilhas, módulos, vídeos e materiais de apoio.
+- **Conexão** – empresas cadastrando vagas e talent pool.
+- **Match inteligente** – pontuação baseada em tecnologias e cultura.
+- **Reconhecimento** – emissão de certificados bonitos em PDF, prontos para baixar e compartilhar.
+
+---
 
 ## ✨ Funcionalidades
 
-### ✅ Implementadas
+### ✅ Já implementadas
 
-- **Autenticação e Autorização**
-  - Registro de usuários e empresas
-  - Login com Sanctum (API tokens)
-  - Sistema de roles (user/company)
-  - Middleware de autorização por role
+**Autenticação & Perfis**
+- Registro de **usuárias** e **empresas** (`/api/auth/register/*`).
+- Login com **Laravel Sanctum** (API tokens) e endpoint `me`.
+- Roles (`user` / `company`) com middleware de autorização.
+- CRUD básico de usuárias e empresas, com filtros por `tech_stack` e `culture_tags`.
 
-- **Gestão de Cursos**
-  - Modelos para Course, Module, ModuleVideo, ModuleMaterial
-  - Sistema de progresso de cursos
-  - Tracking de conclusão de módulos
+**Cursos, progresso e certificação**
+- Modelos para `Course`, `Module`, `ModuleVideo`, `ModuleMaterial`.
+- Serviço de progresso (`CourseProgressService`, `UserProgressService`).
+- Marcar início e conclusão de curso/módulo.
+- Jobs para side-effects ao concluir curso:
+  - `UpdateTalentPoolStatus` (atualiza status no talent pool).
+  - `SendCourseCompletedEmail` (envia e-mail de conclusão).
+- **Certificado em PDF**:
+  - Blade dedicado em `resources/views/certificates/course_certificate.blade.php`.
+  - Download autenticado em
+    `GET /api/auth/courses/{courseId}/certificate/download`.
 
-- **Sistema de Email**
-  - Emails de boas-vindas
-  - Notificações de conclusão de curso
-  - Jobs para envio assíncrono
+**Sistema de E-mail**
+- Templates HTML nas cores da Damas Tech em `resources/views/emails/*`:
+  - Boas-vindas para usuária e empresa.
+  - Atualização de progresso.
+  - E-mail de envio de certificado.
+- Mailables + Jobs (`SendWelcomeEmail`, `SendCourseCompletedEmail`).
 
-- **Infraestrutura**
-  - Configuração SQLite para desenvolvimento
-  - Migrations básicas
-  - Estrutura de Models e relacionamentos
+**Match entre vagas e candidatas**
+- `MatchService` calcula score entre usuária e vaga usando:
+  - interseção de `tech_stack` (skills).
+  - interseção de `culture_tags` (cultura).
+- Endpoints:
+  - Empresa vê candidatas ranqueadas: `GET /api/auth/company/jobs/{jobId}/matches`.
+  - Usuária vê vagas recomendadas: `GET /api/auth/user/matches/jobs`.
 
-### 🚧 Em Desenvolvimento
+**Documentação & Health**
+- Health-check: `GET /api/health`.
+- Documentação OpenAPI 3 única em: `docs/openapi.yaml`.
+- Endpoint para servir o YAML: `GET /api/docs/openapi`.
 
-- **Talent Pool**
-  - Sistema de avaliação de candidatos
-  - Status de progresso (in_training, highlighted)
-  - Notas de avaliação
+**Infraestrutura & Deploy**
+- Ambiente local com **SQLite** por padrão (arquivo `database.sqlite`).
+- Dockerfile preparado para deploy (utilizado na Railway).
+- Testes de feature e unitários rodando com `php artisan test`.
 
-- **Sistema de Pagamentos**
-  - Assinaturas e planos
-  - Integração com gateways de pagamento
-  - Histórico de pagamentos
+### 🚧 Em desenvolvimento
 
-- **Dashboard**
-  - Painel para empresas
-  - Painel para usuários
-  - Relatórios de progresso
+- Dashboard da empresa e da usuária com métricas agregadas.
+- Sistema completo de Talent Pool (notas, histórico detalhado).
+- Integração com gateways de pagamento (planos/assinaturas).
 
-### 📋 Pendentes
-
-- **Testes**
-  - Testes unitários
-  - Testes de integração
-  - Testes de API
-
-- **Documentação**
-  - Swagger/OpenAPI
-  - Documentação de endpoints
-
-- **Segurança**
-  - Rate limiting
-  - Validação de entrada robusta
-  - Logs de auditoria
+---
 
 ## 🛠 Tecnologias
 
-### Backend
-- **Laravel 11.x** - Framework PHP
-- **PHP 8.3+** - Linguagem de programação
-- **SQLite** - Banco de dados (desenvolvimento)
-- **Laravel Sanctum** - Autenticação API
-- **Laravel Queue** - Processamento assíncrono
+**Backend**
+- Laravel **12.x**
+- PHP **^8.2**
+- Banco de dados: **SQLite** (dev) / **MySQL** (produção)
+- Sanctum (tokens de API)
+- Queues para Jobs de e-mail e talent pool
 
-### Frontend (Futuro)
-- **Vue.js/React** - Framework frontend
-- **Tailwind CSS** - Framework CSS
-- **Vite** - Build tool
+**Qualidade**
+- Pest para testes.
+- PHP Insights (~90% de score) configurado em `config/insights.php`.
 
-### DevOps
-- **Docker** - Containerização
-- **GitHub Actions** - CI/CD
-- **Composer** - Gerenciador de dependências
+**Geração de PDF**
+- `barryvdh/laravel-dompdf` para gerar certificados em PDF a partir de Blade.
 
-## 📋 Pré-requisitos
+**DevOps**
+- Docker / Railway (deploy com imagem Docker custom).
+- Composer / NPM.
 
-- PHP 8.3 ou superior
+---
+
+## 💻 Ambiente Local
+
+Pré-requisitos:
+
+- PHP 8.2+
 - Composer
 - Git
-- SQLite3 (ou MySQL/PostgreSQL para produção)
-- Node.js 18+ (para assets frontend)
+- SQLite3 (ou MySQL se preferir)
+- Node.js 18+ (para front/assets, se usar)
 
-### Instalação das Dependências PHP
+Instalação de PHP (exemplo Ubuntu):
 
 ```bash
-# Ubuntu/Debian
 sudo apt update
-sudo apt install php8.3 php8.3-sqlite3 php8.3-mbstring php8.3-xml php8.3-curl php8.3-zip
-
-# macOS (com Homebrew)
-brew install php@8.3
-
-# Windows (usar XAMPP ou similar)
+sudo apt install php8.2 php8.2-sqlite3 php8.2-mbstring php8.2-xml php8.2-curl php8.2-zip
 ```
 
-## 🚀 Instalação
+---
 
-### 1. Clone o Repositório
+## ⚡ Instalação Rápida
 
 ```bash
 git clone https://github.com/Damas-Tech/api_damas_tech.git
 cd api_damas_tech/damas-tech-app
-```
 
-### 2. Instale as Dependências
-
-```bash
-# Instalar dependências PHP
 composer install
+npm install   # opcional, se for rodar front
 
-# Instalar dependências Node.js (opcional)
-npm install
-```
-
-### 3. Configure o Ambiente
-
-```bash
-# Copiar arquivo de configuração
 cp .env.example .env
-
-# Gerar chave da aplicação
 php artisan key:generate
-```
 
-### 4. Configure o Banco de Dados
-
-O projeto está configurado para usar SQLite por padrão. O arquivo `database/database.sqlite` será criado automaticamente.
-
-Para usar MySQL/PostgreSQL, edite o `.env`:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=damas_tech_app
-DB_USERNAME=seu_usuario
-DB_PASSWORD=sua_senha
-```
-
-### 5. Execute as Migrations
-
-```bash
 php artisan migrate
-```
-
-### 6. Inicie o Servidor
-
-```bash
 php artisan serve
 ```
 
-A API estará disponível em `http://localhost:8000`
+API local: `http://localhost:8000`
+
+> Banco local: por padrão usa SQLite (`database/database.sqlite`).
+
+---
 
 ## ⚙️ Configuração
 
-### Variáveis de Ambiente Importantes
+Trecho importante do `.env` em desenvolvimento:
 
 ```env
-# Aplicação
-APP_NAME="Damas.Tech"
+APP_NAME="Damas Tech"
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000
 
-# Banco de Dados
 DB_CONNECTION=sqlite
-# DB_DATABASE=/caminho/para/database.sqlite
 
-# Email (para produção)
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USERNAME=seu_email@gmail.com
-MAIL_PASSWORD=sua_senha_app
-MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS="noreply@damas.tech"
-MAIL_FROM_NAME="${APP_NAME}"
-
-# Cache e Queue
-CACHE_STORE=database
+MAIL_MAILER=log
 QUEUE_CONNECTION=database
 ```
 
-## 📖 Uso
+Em produção (Railway), a API usa MySQL interno e SMTP real; as variáveis são configuradas direto no painel.
 
-### Autenticação
+---
 
-#### Registrar Usuário
+## 🔑 Fluxos Principais da API
+
+### 1. Autenticação básica
+
+Registrar usuária:
+
 ```bash
 curl -X POST http://localhost:8000/api/auth/register/user \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "João Silva",
-    "email": "joao@email.com",
-    "password": "123456",
-    "password_confirmation": "123456"
+    "name": "Maria Silva",
+    "email": "maria@example.com",
+    "password": "senha123",
+    "password_confirmation": "senha123"
   }'
 ```
 
-#### Registrar Empresa
-```bash
-curl -X POST http://localhost:8000/api/auth/register/company \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "Tech Corp",
-    "email": "contato@techcorp.com",
-    "password": "123456",
-    "password_confirmation": "123456",
-    "cnpj": "12345678000199"
-  }'
-```
+Login e pegar token:
 
-#### Login
 ```bash
 curl -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "joao@email.com",
-    "password": "123456"
+    "email": "maria@example.com",
+    "password": "senha123"
   }'
 ```
 
-## 🔗 API Endpoints
+Depois use o `token` retornado em qualquer rota protegida:
 
-### Autenticação
-- `POST /api/auth/register/user` - Registrar usuário
-- `POST /api/auth/register/company` - Registrar empresa
-- `POST /api/auth/login` - Login
-- `POST /api/auth/logout` - Logout (requer token)
+```bash
+curl http://localhost:8000/api/auth/me \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+```
 
-### Cursos (Em desenvolvimento)
-- `GET /api/courses` - Listar cursos
-- `POST /api/courses` - Criar curso (empresa)
-- `GET /api/courses/{id}` - Detalhes do curso
-- `POST /api/courses/{id}/start` - Iniciar curso
+### 2. Progresso e certificado
 
-### Progresso
-- `GET /api/progress/course/{id}` - Progresso do curso
-- `POST /api/progress/module/{id}/complete` - Completar módulo
+Iniciar curso:
+
+```bash
+curl -X POST http://localhost:8000/api/auth/courses/1/start \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+```
+
+Completar módulo:
+
+```bash
+curl -X POST http://localhost:8000/api/auth/modules/10/complete \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI"
+```
+
+Download do certificado (após concluir):
+
+```bash
+curl -X GET \
+  http://localhost:8000/api/auth/courses/1/certificate/download \
+  -H "Authorization: Bearer SEU_TOKEN_AQUI" \
+  -o certificado-curso-1.pdf
+```
+
+### 3. Match entre vagas e candidatas
+
+- Empresa vê candidatas ranqueadas para uma vaga:
+  - `GET /api/auth/company/jobs/{jobId}/matches`
+- Usuária vê vagas recomendadas para seu perfil:
+  - `GET /api/auth/user/matches/jobs`
+
+Todos esses endpoints estão documentados no OpenAPI (`docs/openapi.yaml`).
+
+---
 
 ## 📁 Estrutura do Projeto
 
-```
+```text
 damas-tech-app/
 ├── app/
 │   ├── Http/
-│   │   ├── Controllers/     # Controladores da API
-│   │   └── Middleware/      # Middlewares customizados
-│   ├── Models/              # Modelos Eloquent
-│   ├── Services/            # Lógica de negócio
-│   ├── Jobs/                # Jobs para filas
-│   ├── Mail/                # Classes de email
-│   └── Providers/           # Service Providers
-├── database/
-│   ├── migrations/          # Migrations do banco
-│   └── seeders/             # Seeders para dados iniciais
+│   │   ├── Controllers/       # Controladores da API
+│   │   └── Middleware/        # Middlewares customizados
+│   ├── Jobs/                  # Jobs (e-mails, talent pool)
+│   ├── Mail/                  # Mailables
+│   ├── Models/                # Modelos Eloquent
+│   ├── Services/              # Regras de negócio (Auth, Match, Progresso...)
+│   └── Support/               # Helpers (ErrorMessages, etc.)
+├── config/
+│   └── insights.php           # Configuração do PHP Insights
+├── docs/
+│   └── openapi.yaml           # Documentação OpenAPI 3
 ├── resources/
 │   └── views/
-│       └── emails/          # Templates de email
+│       ├── emails/            # Templates de e-mail
+│       └── certificates/      # Layout do certificado em HTML
 ├── routes/
-│   └── api.php              # Rotas da API
-└── tests/                   # Testes automatizados
+│   ├── api.php                # Rotas da API REST
+│   └── web.php                # Rotas de preview e utilidades
+├── tests/                     # Testes (Pest)
+└── Dockerfile                 # Build de imagem para deploy
 ```
 
-## 📊 Status do Desenvolvimento
+---
 
-### ✅ Concluído (80%)
+## 🧪 Qualidade e Boas Práticas
 
-- [x] Estrutura base do Laravel
-- [x] Sistema de autenticação
-- [x] Modelos principais (User, Company, Course, Module)
-- [x] Sistema de roles e middleware
-- [x] Templates de email
-- [x] Jobs para processamento assíncrono
-- [x] Configuração de desenvolvimento
+- **Testes**: `php artisan test`
+- **Análise estática/estilo**: `php artisan insights`
+- **Padrões**:
+  - PSR-12, SOLID, DRY.
+  - Controllers enxutos, regras de negócio em Services.
+  - API Resources para respostas consistentes.
 
-### 🚧 Em Progresso (15%)
-
-- [ ] Sistema de Talent Pool
-- [ ] Dashboard de empresas
-- [ ] Sistema de pagamentos
-- [ ] Documentação da API
-
-### 📋 Pendente (5%)
-
-- [ ] Testes automatizados
-- [ ] Deploy e CI/CD
-- [ ] Monitoramento e logs
-- [ ] Documentação completa
-
-## 🎯 Boas Práticas
-
-### Código
-
-- **PSR-12**: Seguir padrões de codificação PHP
-- **SOLID**: Princípios de design orientado a objetos
-- **DRY**: Don't Repeat Yourself
-- **Nomenclatura**: Usar nomes descritivos em inglês
-
-### Git
-
-- **Commits**: Mensagens claras e descritivas
-- **Branches**: Feature branches para novas funcionalidades
-- **Pull Requests**: Sempre revisar código antes de merge
-- **Conventional Commits**: Usar padrão de commits
-
-### Laravel
-
-- **Controllers**: Manter controllers enxutos
-- **Services**: Lógica de negócio em Services
-- **Resources**: Usar API Resources para responses
-- **Validation**: Validação robusta de entrada
-- **Middleware**: Usar middleware para cross-cutting concerns
-
-### Segurança
-
-- **Sanitização**: Sempre sanitizar entrada do usuário
-- **Autorização**: Verificar permissões em todas as rotas
-- **Rate Limiting**: Implementar limites de requisições
-- **HTTPS**: Usar HTTPS em produção
-- **Secrets**: Nunca commitar credenciais
-
-### Performance
-
-- **Eager Loading**: Evitar N+1 queries
-- **Caching**: Cache de queries frequentes
-- **Indexes**: Índices apropriados no banco
-- **Queue**: Operações pesadas em background
+---
 
 ## 🤝 Contribuição
 
-### Como Contribuir
+1. Faça um **fork** do projeto.
+2. Clone o fork: `git clone https://github.com/seu-usuario/api_damas_tech.git`.
+3. Crie uma branch: `git checkout -b feature/minha-feature`.
+4. Implemente e garanta que os testes passam: `php artisan test`.
+5. Abra um Pull Request explicando o contexto da mudança.
 
-1. **Fork** o projeto
-2. **Clone** seu fork: `git clone https://github.com/seu-usuario/api_damas_tech.git`
-3. **Crie** uma branch: `git checkout -b feature/nova-funcionalidade`
-4. **Commit** suas mudanças: `git commit -m 'feat: adiciona nova funcionalidade'`
-5. **Push** para a branch: `git push origin feature/nova-funcionalidade`
-6. **Abra** um Pull Request
+Padrão de commits sugerido (Conventional Commits):
 
-### Padrões de Commit
-
-```
+```text
 feat: nova funcionalidade
 fix: correção de bug
-docs: documentação
-style: formatação
-refactor: refatoração
-test: testes
+docs: atualização de documentação
+refactor: refatoração sem mudança de comportamento
+test: adição/ajuste de testes
 chore: tarefas de manutenção
 ```
 
-### Checklist para PR
-
-- [ ] Código segue padrões PSR-12
-- [ ] Testes passando
-- [ ] Documentação atualizada
-- [ ] Sem conflitos de merge
-- [ ] Commits com mensagens claras
+---
 
 ## 📄 Licença
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
-
-## 👥 Equipe
-
-- **Desenvolvimento**: Equipe Damas.Tech
-- **Contato**: contato@damas.tech
-
-## 📞 Suporte
-
-- **Issues**: [GitHub Issues](https://github.com/Damas-Tech/api_damas_tech/issues)
-- **Email**: suporte@damas.tech
-- **Discord**: [Servidor da Comunidade](https://discord.gg/damastech)
+Projeto licenciado sob [MIT](LICENSE).
 
 ---
 
 <div align="center">
-  <p>Feito com ❤️ pela equipe Damas.Tech</p>
-  <p>🚀 Impulsionando carreiras em tecnologia</p>
+  <p><strong>Damas Tech</strong> — educação, comunidade e oportunidades para mulheres na tecnologia.</p>
 </div>
