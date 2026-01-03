@@ -4,9 +4,6 @@ namespace App\Support;
 
 class ErrorMessages
 {
-    /**
-     * Mapa centralizado de mensagens de erro.
-     */
     protected const MESSAGES = [
         'auth.invalid_credentials' => 'As credenciais informadas são inválidas.',
         'auth.unauthenticated' => 'Você precisa estar autenticada para acessar este recurso.',

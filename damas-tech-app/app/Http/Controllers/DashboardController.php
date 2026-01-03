@@ -1,44 +1,67 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\User;
 use App\Services\UserProgressService;
+use App\Services\StatsService;
 
 class DashboardController extends Controller
 {
     protected $progressService;
+    protected $statsService;
 
-    public function __construct(UserProgressService $progressService)
+    public function __construct(UserProgressService $progressService, StatsService $statsService)
     {
         $this->progressService = $progressService;
+        $this->statsService = $statsService;
         $this->middleware('auth:sanctum');
     }
 
-    // 📊 Dashboard da empresa/admin
     public function companyDashboard()
     {
-        $courses = Course::with('modules.materials', 'modules.videos')->get();
-        $users = User::count();
+        $user = auth()->user();
+
+        $companyId = $user->company_id;
+
+        if (!$companyId) {
+            $courses = Course::count();
+            $users = User::count();
+            return response()->json([
+                'global_stats' => [
+                    'total_courses' => $courses,
+                    'total_users' => $users
+                ]
+            ]);
+        }
+
+        $stats = $this->statsService->getCompanyStats($companyId);
 
         return response()->json([
-            'total_courses' => $courses->count(),
-            'total_users' => $users,
+            'stats' => $stats
         ]);
     }
 
-    // 📊 Dashboard do usuário (progresso em cada curso)
     public function userDashboard()
     {
+        $user = auth()->user();
         $courses = Course::with('modules.materials', 'modules.videos')->get();
 
-        $progress = $courses->map(function ($course) {
+        $courseProgress = $courses->map(function ($course) {
             return [
-                'course' => $course->title,
-                'progress' => $this->progressService->getProgressForCourse($course),
+                'course_id' => $course->id,
+                'title' => $course->title,
+                'progress_percentage' => $this->progressService->getProgressForCourse($course),
+                'status' => 'active'
             ];
         });
 
-        return response()->json($progress);
+        $userStats = $this->statsService->getUserStats($user->id);
+
+        return response()->json([
+            'overview' => $userStats,
+            'my_courses' => $courseProgress
+        ]);
     }
 }

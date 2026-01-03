@@ -1,61 +1,140 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Damas Tech Logo">
 </p>
 
-## About Laravel
+<h1 align="center">Damas Tech - API</h1>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+    <img src="https://img.shields.io/badge/PHP-8.2-777BB4?style=for-the-badge&logo=php" alt="PHP Badge">
+    <img src="https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel" alt="Laravel Badge">
+    <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql" alt="MySQL Badge">
+    <img src="https://img.shields.io/badge/OpenAPI-3.0-6BA539?style=for-the-badge&logo=openapi-initiative" alt="OpenAPI Badge">
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🚀 Sobre o Projeto
 
-## Learning Laravel
+**Damas Tech** é uma plataforma focada na **Educação e Empregabilidade** para mulheres na tecnologia. Esta API RESTful alimenta toda a inteligência do sistema, gerenciando desde o aprendizado (LMS) até a conexão com vagas de emprego.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+A plataforma não apenas entrega conteúdo, mas oferece uma experiência prática com um **Code Runner** integrado, fórum de comunidade e sistema gamificado de certificação.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## ✨ Funcionalidades Principais
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🎓 LMS (Learning Management System)
+- **Trilhas de Aprendizado:** Cursos estruturados em módulos e materiais (Vídeos, PDFs, Artigos).
+- **Projetos Práticos:** Submissão de projetos reais com feedback (GitHub/Deploy).
+- **Certificados Dinâmicos:** Geração automática de certificados em PDF ao concluir cursos ou projetos.
+- **Progresso Detalhado:** Acompanhamento visual da evolução da estudante (%) por curso e módulo.
 
-## Laravel Sponsors
+### 💻 Code Runner & Playground
+- **Executor Multilinguagem:** Integração com API Piston para execução segura de código.
+- **Linguagens Suportadas:** Python, JavaScript, PHP, Java, Go, C++, etc.
+- **Code Challenges:** Desafios de programação com validação automática de output (estilo LeetCode).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 🤝 Comunidade & Social
+- **Fórum de Dúvidas:** Criação de tópicos e respostas, vinculados ou não a cursos específicos.
+- **Login Social:** Autenticação simplificada com Google Account (OAuth2).
 
-### Premium Partners
+### 🏢 Portal de Empregabilidade
+- **Match de Vagas:** Algoritmo que conecta candidatas a vagas baseando-se em Tech Stack, Cultura e Senioridade.
+- **Dashboard para Empresas:** Métricas de visualização de vagas e perfil de candidatas.
+- **Candidatura Simplificada:** Aplicação para vagas com um clique.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 🛡️ Segurança & Infraestrutura
+- **Autenticação Robusta:** Tokens via Laravel Sanctum com expiração e rotação automática.
+- **Rate Limiting:** Proteção contra força bruta em logins e abuso do Code Runner.
+- **Password Policies:** Exigência de senhas fortes e compromissadas (HIBP).
+- **Filas & Jobs:** Envio assíncrono de e-mails de boas-vindas, reset de senha e suporte.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🛠️ Tecnologias Utilizadas
 
-## Code of Conduct
+- **Framework:** Laravel 11
+- **Banco de Dados:** MySQL / SQLite (Dev)
+- **Autenticação:** Laravel Sanctum & Socialite (Google)
+- **Documentação:** OpenAPI 3.0 (Swagger UI)
+- **PDFs:** DomPDF
+- **Jobs/Queue:** Database Driver
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## ⚙️ Instalação e Configuração
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Pré-requisitos
+- PHP >= 8.2
+- Composer
+- MySQL
 
-## License
+### Passo a Passo
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. **Clone o repositório:**
+   ```bash
+   git clone git@github.com:seu-usuario/api-damas-tech.git
+   cd damas-tech-app
+   ```
+
+2. **Instale as dependências:**
+   ```bash
+   composer install
+   ```
+
+3. **Configure as variáveis de ambiente:**
+   ```bash
+   cp .env.example .env
+   # Edite o .env com suas configurações de DB e E-mail
+   ```
+
+4. **Gere a chave da aplicação:**
+   ```bash
+   php artisan key:generate
+   ```
+
+5. **Execute as migrações (com seeders opcionais):**
+   ```bash
+   php artisan migrate --seed
+   ```
+
+6. **Inicie o servidor:**
+   ```bash
+   php artisan serve
+   ```
+
+A API estará disponível em `http://localhost:8000`.
+
+---
+
+## 📚 Documentação da API
+
+A documentação completa dos endpoints está disponível via **Swagger UI**.
+
+- **Acesse:** `http://localhost:8000/docs`
+- **Arquivo YAML:** Disponível em `docs/openapi.yaml`
+
+---
+
+## 🧪 Testando Funcionalidades
+
+### Code Runner
+Para testar o executor de código:
+```http
+POST /api/auth/code/execute
+{
+    "language": "python",
+    "code": "print('Hello Damas Tech!')"
+}
+```
+
+### Reset de Senha
+Para simular o fluxo de "Esqueci minha senha" em ambiente local, utilize o endpoint `/api/auth/forgot-password`. O e-mail enviado contanrá um link para o frontend (configurável no `.env`).
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença [MIT](https://opensource.org/licenses/MIT).
+
+---
+
+<p align="center">Desenvolvido com 💜 por <strong>Andressa Silva Pereira</strong> - CTO Damas Tech</p>

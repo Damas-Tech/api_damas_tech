@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Company;
 use Illuminate\Support\Facades\Hash;
 use App\Jobs\SendWelcomeEmail;
+use App\Jobs\SendCompanyWelcomeEmail;
 use Illuminate\Support\Facades\DB;
 
 class AuthService
@@ -39,7 +40,7 @@ class AuthService
                 'cnpj' => $data['cnpj'],
             ]);
 
-            SendWelcomeEmail::dispatch($user);
+            SendCompanyWelcomeEmail::dispatch($company);
 
             return ['user' => $user, 'company' => $company];
         });

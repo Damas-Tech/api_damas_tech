@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\HasRoles;
+use App\Models\Course;
 
 class User extends Authenticatable
 {
@@ -69,5 +70,11 @@ class User extends Authenticatable
     public function externalAuth()
     {
         return $this->hasMany(ExternalAuth::class, 'users_id');
+    }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'user_course_progress', 'users_id', 'course_id')
+            ->withPivot('started_at', 'completed_at');
     }
 }

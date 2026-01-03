@@ -57,6 +57,92 @@ paths:
                     type: string
                     format: date-time
 
+  /api/auth/google:
+    get:
+      summary: Login com Google
+      tags: [Autenticação]
+      description: Redireciona o usuário para a página de login do Google.
+      responses:
+        "302":
+          description: Redirecionamento para o Google.
+
+  /api/auth/google/callback:
+    get:
+      summary: Callback do Login com Google
+      tags: [Autenticação]
+      description: Endpoint de retorno do Google. Cria ou loga o usuário e retorna o token de acesso.
+      responses:
+        "200":
+          description: Login realizado com sucesso.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthLoginResponse"
+
+  /api/auth/forgot-password:
+    post:
+      summary: Solicitar Redefinição de Senha
+      tags: [Autenticação]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        "200":
+          description: E-mail de redefinição enviado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /api/auth/support:
+    post:
+      summary: Enviar Mensagem de Suporte
+      tags: [Suporte]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - message
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                message:
+                  type: string
+      responses:
+        "200":
+          description: Mensagem recebida com sucesso.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          ticket_id:
+                            type: string
+                            example: SUP-2024-9912
+
   /api/auth/register/user:
     post:
       summary: Registro de usuária
@@ -122,6 +208,14 @@ paths:
       responses:
         "200":
           description: Logout realizado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logout realizado com sucesso
 
   /api/auth/me:
     get:
@@ -135,7 +229,358 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserResponse"
+
+  /api/auth/dashboard/company:
+    get:
+      summary: Dashboard da empresa (Analytics)
+      description: Retorna métricas consolidadas da empresa, incluindo visualizações, vagas ativas e skills mais demandadas.
+      tags: [Dashboard]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Estatísticas da empresa
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompanyDashboardResponse"
+
+  /api/auth/community/threads:
+    get:
+      summary: Lista tópicos do fórum
+      tags: [Comunidade]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: query
+          name: course_id
+          schema:
+            type: integer
+          description: Filtrar por curso específico
+      responses:
+        "200":
+          description: Lista de tópicos paginada
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          data:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/ForumThread"
+    post:
+      summary: Cria novo tópico
+      tags: [Comunidade]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateThreadRequest"
+      responses:
+        "201":
+          description: Tópico criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /api/auth/community/threads/{id}:
+    get:
+      summary: Detalhes do tópico e respostas
+      tags: [Comunidade]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detalhes do tópico
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ForumThread"
+
+  /api/auth/community/threads/{id}/reply:
+    post:
+      summary: Responder a um tópico
+      tags: [Comunidade]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReplyRequest"
+      responses:
+        "201":
+          description: Resposta enviada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /api/auth/projects/{materialId}/submit:
+    post:
+      summary: Submeter projeto prático
+      tags: [Projetos]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: materialId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitProjectRequest"
+      responses:
+        "200":
+          description: Projeto submetido
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /api/auth/my-projects:
+    get:
+      summary: Meus projetos submetidos
+      tags: [Projetos]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Lista de projetos submetidos
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ProjectSubmission"
+
+  /api/auth/challenges:
+    get:
+      summary: Lista desafios de código
+      tags: [Challenges]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: query
+          name: module_id
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lista de desafios
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/CodeChallenge"
+
+  /api/auth/challenges/{id}:
+    get:
+      summary: Detalhes do desafio
+      tags: [Challenges]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Detalhes do desafio
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CodeChallenge"
+
+  /api/auth/challenges/{id}/check:
+    post:
+      summary: Submeter solução do desafio
+      tags: [Challenges]
+      security:
+        - sanctumAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                language:
+                  type: string
+      responses:
+        "200":
+          description: Resultado da verificação
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          passed:
+                            type: boolean
+                          status:
+                            type: string
+                          actual_output:
+                            type: string
+                          expected_output:
+                            type: string
+
+  /api/auth/code/runtimes:
+    get:
+      summary: Lista linguagens de programação suportadas
+      tags: [Code Runner]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Lista de linguagens
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            language:
+                              type: string
+                            version:
+                              type: string
+                            aliases:
+                              type: array
+                              items:
+                                type: string
+
+  /api/auth/code/execute:
+    post:
+      summary: Executa código (Playground)
+      tags: [Code Runner]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [language, code]
+              properties:
+                language:
+                  type: string
+                  example: python
+                code:
+                  type: string
+                  example: print("Hello World")
+                version:
+                  type: string
+                  example: "*"
+                stdin:
+                  type: string
+      responses:
+        "200":
+          description: Resultado da execução
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          run:
+                            type: object
+                            properties:
+                              stdout:
+                                type: string
+                              stderr:
+                                type: string
+                              code:
+                                type: integer
+
+  /api/auth/dashboard/user:
+    get:
+      summary: Dashboard da usuária (Analytics)
+      description: Retorna progresso geral, minutos estudados na semana e detalhes dos cursos em andamento.
+      tags: [Dashboard]
+      security:
+        - sanctumAuth: []
+      responses:
+        "200":
+          description: Progresso e estatísticas da usuária
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDashboardResponse"
 
   /api/auth/courses/{courseId}/start:
     post:
@@ -266,28 +711,12 @@ paths:
       responses:
         "200":
           description: Material removido
+          content:
+            application/json:
+              schema:
+                type: object # Empty success response conventionally null or msg
         "404":
           description: Material não encontrado
-
-  /api/auth/dashboard/company:
-    get:
-      summary: Dashboard da empresa
-      tags: [Dashboard]
-      security:
-        - sanctumAuth: []
-      responses:
-        "200":
-          description: Estatísticas da empresa
-
-  /api/auth/dashboard/user:
-    get:
-      summary: Dashboard da usuária
-      tags: [Dashboard]
-      security:
-        - sanctumAuth: []
-      responses:
-        "200":
-          description: Progresso por curso
 
   /api/auth/company/jobs:
     get:
@@ -367,9 +796,6 @@ paths:
       summary: Lista usuárias (candidatas) com filtros
       description: |
         Disponível para contas com role `company`. Permite filtrar por tecnologias e cultura.
-
-        Exemplos de uso:
-        - `GET /api/auth/users?tech_stack=php,laravel&culture_tags=inclusiva,remota`
       tags: [Usuárias]
       security:
         - sanctumAuth: []
@@ -417,7 +843,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserResponse"
         "404":
           description: Usuária não encontrada
 
@@ -438,10 +864,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
-
+                $ref: "#/components/schemas/UserResponse"
+    
     patch:
-      summary: Atualiza parcialmente o perfil da própria usuária
+      summary: Atualiza parcialmente perfil da própria usuária
       tags: [Usuárias]
       security:
         - sanctumAuth: []
@@ -457,7 +883,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/UserResponse"
 
     delete:
       summary: Exclui a própria conta de usuária
@@ -518,7 +944,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Company"
+                $ref: "#/components/schemas/CompanyResponse"
         "404":
           description: Empresa não encontrada
 
@@ -539,10 +965,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Company"
-
+                $ref: "#/components/schemas/CompanyResponse"
+    
     patch:
-      summary: Atualiza parcialmente o perfil da própria empresa
+      summary: Atualiza parcialmente perfil da própria empresa
       tags: [Empresas]
       security:
         - sanctumAuth: []
@@ -558,7 +984,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Company"
+                $ref: "#/components/schemas/CompanyResponse"
 
     delete:
       summary: Exclui a própria empresa vinculada à conta autenticada
@@ -638,6 +1064,18 @@ components:
           type: array
           items:
             type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    UserResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/User"
 
     Company:
       type: object
@@ -656,6 +1094,18 @@ components:
           type: array
           items:
             type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    CompanyResponse:
+      type: object
+      properties:
+        data:
+          $ref: "#/components/schemas/Company"
 
     AuthSuccessUserResponse:
       type: object
@@ -682,6 +1132,19 @@ components:
           properties:
             token:
               type: string
+
+    SuccessResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: success
+        message:
+          type: string
+          example: Operação realizada com sucesso
+        data:
+          type: object
+          nullable: true
 
     UserCourseProgress:
       type: object
@@ -799,46 +1262,138 @@ components:
             type: string
         location_type:
           type: string
-          nullable: true
         seniority:
           type: string
-          nullable: true
         status:
-          type: string
-          enum: [open, closed, draft]
+           type: string
+           enum: [open, closed, draft]
 
-    MatchResult:
+    ForumThread:
       type: object
       properties:
-        user_id:
+        id:
           type: integer
-        job_id:
+        title:
+          type: string
+        content:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        replies:
+          type: array
+          items:
+            $ref: "#/components/schemas/ForumReply"
+        created_at:
+          type: string
+          format: date-time
+
+    ForumReply:
+      type: object
+      properties:
+        id:
           type: integer
-        score:
-          type: number
-          format: float
-        skill_score:
-          type: number
-          format: float
-        culture_score:
-          type: number
-          format: float
-        skills_matched:
-          type: array
-          items:
-            type: string
-        skills_missing:
-          type: array
-          items:
-            type: string
-        culture_matched:
-          type: array
-          items:
-            type: string
-        culture_missing:
-          type: array
-          items:
-            type: string
+        content:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+        created_at:
+          type: string
+          format: date-time
+
+    ProjectSubmission:
+      type: object
+      properties:
+        id:
+          type: integer
+        submission_url:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        feedback:
+          type: string
+          nullable: true
+        material:
+          $ref: "#/components/schemas/ModuleMaterial"
+        created_at:
+          type: string
+          format: date-time
+
+    CreateThreadRequest:
+      type: object
+      required: [title, content]
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        course_id:
+          type: integer
+          nullable: true
+
+    CreateReplyRequest:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+
+    SubmitProjectRequest:
+      type: object
+      required: [submission_url]
+      properties:
+        submission_url:
+          type: string
+
+    CodeChallenge:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        language:
+          type: string
+        initial_code:
+          type: string
+        difficulty:
+          type: string
+          enum: [easy, medium, hard]
+        expected_output:
+          type: string
+          description: Output esperado (ocultar no front se for desafio as cegas?)
+
+    MatchResult:
+       type: object
+       properties:
+         user_id:
+           type: integer
+         job_id:
+           type: integer
+         score:
+           type: integer
+         skill_score:
+           type: integer
+         culture_score:
+           type: integer
+         skills_matched:
+           type: array
+           items:
+             type: string
+         skills_missing:
+           type: array
+           items:
+             type: string
+         culture_matched:
+           type: array
+           items:
+             type: string
+         culture_missing:
+           type: array
+           items:
+             type: string
 
     UpdateUserProfileRequest:
       type: object
@@ -852,7 +1407,7 @@ components:
         culture_tags:
           type: array
           items:
-            type: string
+             type: string
 
     UpdateCompanyProfileRequest:
       type: object
@@ -864,4 +1419,53 @@ components:
         culture_tags:
           type: array
           items:
-            type: string
+             type: string
+
+    CompanyDashboardResponse:
+      type: object
+      properties:
+        stats:
+          type: object
+          properties:
+            total_jobs:
+              type: integer
+            active_jobs:
+              type: integer
+            views_history:
+              type: object
+              additionalProperties:
+                 type: integer
+            top_skills_requested:
+               type: object
+               additionalProperties:
+                  type: integer
+
+    UserDashboardResponse:
+      type: object
+      properties:
+        overview:
+          type: object
+          properties:
+             completed_courses:
+               type: integer
+             in_progress_courses:
+               type: integer
+             total_certificates:
+               type: integer
+             weekly_minutes:
+               type: object
+               additionalProperties:
+                  type: integer
+        my_courses:
+           type: array
+           items:
+             type: object
+             properties:
+               course_id:
+                 type: integer
+               title:
+                 type: string
+               progress_percentage:
+                 type: integer
+               status:
+                  type: string

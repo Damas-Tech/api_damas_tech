@@ -7,14 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class MatchResultResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        // $this é um array simples vindo do MatchService
         return [
             'user_id' => $this['user_id'],
             'job_id' => $this['job_id'],

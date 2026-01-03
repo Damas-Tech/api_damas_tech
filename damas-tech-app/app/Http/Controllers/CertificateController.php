@@ -15,7 +15,7 @@ class CertificateController extends Controller
         try {
             $user = $request->user();
 
-            if (! $progressService->isCourseCompleted($user->id, $courseId)) {
+            if (!$progressService->isCourseCompleted($user->id, $courseId)) {
                 return response()->json([
                     'message' => ErrorMessages::get('course.not_found', 'Certificado disponível apenas após conclusão do curso.'),
                 ], 403);
@@ -23,7 +23,7 @@ class CertificateController extends Controller
 
             $course = Course::with('modules')->find($courseId);
 
-            if (! $course) {
+            if (!$course) {
                 return response()->json([
                     'message' => ErrorMessages::get('course.not_found'),
                 ], 404);
@@ -54,6 +54,43 @@ class CertificateController extends Controller
             return response()->json([
                 'message' => ErrorMessages::get('generic.unexpected_error'),
             ], 500);
+        }
+    }
+    public function downloadProjectCertificate(Request $request, int $submissionId)
+    {
+        try {
+            $user = $request->user();
+            $submission = \App\Models\ProjectSubmission::with('material.module.course')->find($submissionId);
+
+            if (!$submission) {
+                return response()->json(['message' => 'Submissão não encontrada.'], 404);
+            }
+
+            if ($submission->user_id !== $user->id) {
+                return response()->json(['message' => 'Acesso não autorizado.'], 403);
+            }
+
+            if ($submission->status !== 'approved') {
+                return response()->json(['message' => 'Certificado disponível apenas para projetos aprovados.'], 403);
+            }
+
+            $data = [
+                'user' => $user,
+                'projectTitle' => $submission->material->title,
+                'courseName' => $submission->material->module->course->name ?? null,
+                'completedAt' => $submission->updated_at->format('d/m/Y'),
+                'certificateCode' => sprintf('DT-PRJ-%d-%d', $submission->id, $user->id),
+            ];
+
+            $pdf = Pdf::loadView('certificates.project_certificate', $data)
+                ->setPaper('a4', 'landscape');
+
+            $fileName = sprintf('certificado-projeto-%s-%s.pdf', $user->id, $submission->id);
+
+            return $pdf->download($fileName);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['message' => ErrorMessages::get('generic.unexpected_error')], 500);
         }
     }
 }

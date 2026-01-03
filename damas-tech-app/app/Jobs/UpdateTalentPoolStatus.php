@@ -23,16 +23,14 @@ class UpdateTalentPoolStatus implements ShouldQueue
 
     public function handle()
     {
-        // Busca o Talent Pool da empresa (ou empresas) relacionadas
         $talentPool = TalentPool::where('users_id', $this->progress->users_id)
             ->where('status', 'in_training')
             ->first();
 
         if ($talentPool) {
-            $talentPool->status = 'highlighted'; // exemplo: usuário completou curso e se destacou
+            $talentPool->status = 'highlighted';
             $talentPool->evaluation_notes .= "\nCurso {$this->progress->course_id} concluído em " . now();
             $talentPool->save();
         }
     }
 }
-

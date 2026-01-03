@@ -1,11 +1,22 @@
 <?php
+
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ExternalAuth extends Model
 {
-    protected $fillable = ['users_id', 'provider', 'provider_user_id', 'access_token', 'refresh_token', 'expires_at'];
+    use HasFactory;
+
+    protected $fillable = [
+        'users_id',
+        'provider',
+        'provider_id',
+        'provider_token',
+        'provider_refresh_token',
+        'avatar_url',
+    ];
 
     public function user()
     {

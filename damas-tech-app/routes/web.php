@@ -9,11 +9,15 @@ Route::get('/', function () {
         'name' => 'Damas Tech API',
         'status' => 'ok',
         'health' => url('/api/health'),
-        'docs' => url('/api/docs/openapi'),
+        'docs' => url('/docs'),
+        'openapi_yaml' => url('/api/docs/openapi'),
     ]);
 });
 
-// Rotas de preview de e-mail (somente para ambiente de desenvolvimento)
+Route::get('/docs', function () {
+    return view('swagger');
+});
+
 Route::get('/_preview/email/user-welcome', function () {
     $user = new User(['name' => 'Maria da Silva']);
 
@@ -50,7 +54,6 @@ Route::get('/_preview/email/user-certificate', function () {
     ]);
 });
 
-// Preview de certificado em tela cheia (para download/print ou geração de PDF)
 Route::get('/_preview/certificate/course', function () {
     $user = new User(['name' => 'Maria da Silva']);
 
@@ -61,5 +64,17 @@ Route::get('/_preview/certificate/course', function () {
         'completedAt' => now()->format('d/m/Y'),
         'hours' => '10 horas',
         'modules' => '5 módulos',
+    ]);
+});
+
+Route::get('/_preview/email/password-reset', function () {
+    return view('emails.password_reset', ['url' => 'http://localhost/reset-token']);
+});
+
+Route::get('/_preview/email/support', function () {
+    return view('emails.support_reply', [
+        'name' => 'Fernanda Oliveira',
+        'ticketId' => 'SUP-2024-9912',
+        'originalMessage' => 'Olá, não estou conseguindo gerar meu certificado do curso de UX Design. Podem ajudar?'
     ]);
 });

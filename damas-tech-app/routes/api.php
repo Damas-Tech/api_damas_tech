@@ -4,6 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\SupportController;
+use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\CodeExecutionController;
+use App\Http\Controllers\CodeChallengeController;
 use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobOpportunityController;
@@ -11,7 +18,6 @@ use App\Http\Controllers\MatchController;
 use App\Http\Controllers\ModuleMaterialController;
 use App\Http\Controllers\UserController;
 
-// Health-check simples para monitoramento / load balancer
 Route::get('/health', function () {
     return response()->json([
         'status' => 'ok',
@@ -19,7 +25,6 @@ Route::get('/health', function () {
     ]);
 });
 
-// Documentação OpenAPI (Swagger) em YAML
 Route::get('/docs/openapi', function () {
     $path = base_path('docs/openapi.yaml');
 
@@ -30,24 +35,23 @@ Route::get('/docs/openapi', function () {
     ]);
 });
 
-Route::prefix('auth')->group(function () {
+Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
     Route::post('/register/user', [AuthController::class, 'registerUser']);
     Route::post('/register/company', [AuthController::class, 'registerCompany']);
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
+    Route::post('/support', [SupportController::class, 'store']);
+    Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle']);
+    Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
     });
     Route::middleware(['auth:sanctum', 'role:company'])->group(function () {
-        // Dashboard da empresa
-        // Route::get('/company/dashboard', [CompanyController::class, 'dashboard']);
-
-        // Vagas e match para empresas
         Route::get('/company/jobs', [JobOpportunityController::class, 'index']);
         Route::post('/company/jobs', [JobOpportunityController::class, 'store']);
         Route::get('/company/jobs/{jobId}/matches', [MatchController::class, 'jobCandidates']);
 
-        // Lista de usuárias (candidatas) com filtros por tecnologias e cultura
         Route::get('/users', [UserController::class, 'index']);
         Route::get('/users/{user}', [UserController::class, 'show']);
     });
@@ -62,12 +66,10 @@ Route::prefix('auth')->group(function () {
     Route::middleware(['auth:sanctum', 'role:company'])->get('/dashboard/company', [DashboardController::class, 'companyDashboard']);
     Route::middleware(['auth:sanctum', 'role:user'])->get('/dashboard/user', [DashboardController::class, 'userDashboard']);
 
-    // Listagem e detalhes de empresas (para qualquer usuária autenticada)
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/companies', [CompanyController::class, 'index']);
         Route::get('/companies/{company}', [CompanyController::class, 'show']);
 
-        // Atualização e exclusão de perfil da própria usuária e empresa
         Route::match(['put', 'patch'], '/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
 
@@ -75,7 +77,6 @@ Route::prefix('auth')->group(function () {
         Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
     });
 
-    // Vagas recomendadas para a usuária
     Route::middleware(['auth:sanctum', 'role:user'])->get('/user/matches/jobs', [MatchController::class, 'userJobs']);
 
     Route::middleware(['auth:sanctum', 'role:user'])->post('/progress/{type}/{id}/complete', function ($type, $id, \App\Services\UserProgressService $service) {
@@ -86,10 +87,32 @@ Route::prefix('auth')->group(function () {
         return response()->json($progress);
     });
 
-    // Materiais de módulo: leitura para usuários autenticados, escrita para empresas
     Route::prefix('modules/{moduleId}/materials')->group(function () {
         Route::middleware('auth:sanctum')->get('/', [ModuleMaterialController::class, 'index']);
         Route::middleware(['auth:sanctum', 'role:company'])->post('/', [ModuleMaterialController::class, 'store']);
         Route::middleware(['auth:sanctum', 'role:company'])->delete('/{id}', [ModuleMaterialController::class, 'destroy']);
     });
+    // Community / Forum
+    Route::prefix('community')->group(function () {
+        Route::get('/threads', [CommunityController::class, 'index']);
+        Route::post('/threads', [CommunityController::class, 'store']);
+        Route::get('/threads/{id}', [CommunityController::class, 'show']);
+        Route::post('/threads/{id}/reply', [CommunityController::class, 'reply']);
+    });
+
+    // Projects
+    Route::post('/projects/{materialId}/submit', [ProjectController::class, 'submit']);
+    Route::get('/my-projects', [ProjectController::class, 'index']);
+    Route::get('/projects/certificate/{submissionId}', [CertificateController::class, 'downloadProjectCertificate']);
+
+    // Code Runner / Playground (Rate Limited)
+    Route::middleware('throttle:10,1')->prefix('code')->group(function () {
+        Route::get('/runtimes', [CodeExecutionController::class, 'runtimes']);
+        Route::post('/execute', [CodeExecutionController::class, 'execute']);
+    });
+
+    // Code Challenges
+    Route::get('/challenges', [CodeChallengeController::class, 'index']);
+    Route::get('/challenges/{id}', [CodeChallengeController::class, 'show']);
+    Route::post('/challenges/{id}/check', [CodeChallengeController::class, 'check']);
 });

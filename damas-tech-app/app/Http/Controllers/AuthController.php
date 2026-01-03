@@ -8,8 +8,11 @@ use App\Services\AuthService;
 use App\Http\Resources\UserResource;
 use App\Support\ErrorMessages;
 
+use App\Traits\ApiResponse;
+
 class AuthController extends Controller
 {
+    use ApiResponse;
 
     protected $authService;
 
@@ -26,13 +29,9 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        // Delegamos a criação e disparo de e-mail para o service
         $user = $this->authService->registerUser($request->only(['name', 'email', 'password']));
 
-        return (new UserResource($user))
-            ->additional(['message' => 'Usuário registrado com sucesso'])
-            ->response()
-            ->setStatusCode(201);
+        return $this->success(new UserResource($user), 'messages.success.user_registered', 201);
     }
 
     public function registerCompany(Request $request)
@@ -44,16 +43,12 @@ class AuthController extends Controller
             'cnpj' => 'required|string|unique:companies,cnpj',
         ]);
 
-        // Delegamos criação de usuário, empresa e e-mail de boas-vindas para o service
         $result = $this->authService->registerCompany($request->only(['name', 'email', 'password', 'cnpj']));
 
-        return (new UserResource($result['user']))
-            ->additional([
-                'message' => 'Empresa registrada com sucesso',
-                'company' => $result['company'],
-            ])
-            ->response()
-            ->setStatusCode(201);
+        return $this->success([
+            'user' => new UserResource($result['user']),
+            'company' => $result['company'],
+        ], 'messages.success.company_registered', 201);
     }
 
     public function login(Request $request)
@@ -67,27 +62,25 @@ class AuthController extends Controller
             $result = $this->authService->login($request->only(['email', 'password']));
         } catch (\Exception $e) {
             throw ValidationException::withMessages([
-                'email' => [ErrorMessages::get('auth.invalid_credentials')],
+                'email' => [__('messages.error.invalid_credentials')],
             ]);
         }
 
-        return (new UserResource($result['user']))
-            ->additional([
-                'message' => 'Login realizado com sucesso',
-                'token' => $result['token'],
-            ])
-            ->response();
+        return $this->success([
+            'user' => new UserResource($result['user']),
+            'token' => $result['token'],
+        ], 'messages.success.login_success');
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logout realizado com sucesso']);
+        return $this->success([], 'messages.success.logout_success');
     }
 
     public function me(Request $request)
     {
-        return new UserResource($request->user());
+        return $this->success(new UserResource($request->user()));
     }
 }
