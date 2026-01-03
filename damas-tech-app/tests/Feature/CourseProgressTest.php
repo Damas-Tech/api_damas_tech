@@ -1,55 +1,59 @@
 <?php
 
-use App\Models\User;
+namespace Tests\Feature;
+
 use App\Models\Course;
 use App\Models\Module;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(RefreshDatabase::class);
-
-function authenticatedUser(): User
+class CourseProgressTest extends TestCase
 {
-    $user = User::factory()->create([
-        'role' => 'user',
-    ]);
+    use RefreshDatabase;
 
-    return $user;
+    private function authenticatedUser(): User
+    {
+        return User::factory()->create([
+            'role' => 'user',
+        ]);
+    }
+
+    public function test_permite_iniciar_um_curso()
+    {
+        $user = $this->authenticatedUser();
+        $course = Course::factory()->create();
+
+        $response = $this->actingAs($user, 'sanctum')
+            ->postJson("/api/auth/courses/{$course->id}/start");
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'id',
+            'users_id',
+            'course_id',
+            'started_at',
+        ]);
+    }
+
+    public function test_permite_marcar_modulo_como_completo()
+    {
+        $user = $this->authenticatedUser();
+        $course = Course::factory()->create();
+        $module = Module::factory()->create([
+            'course_id' => $course->id,
+        ]);
+
+        $response = $this->actingAs($user, 'sanctum')
+            ->postJson("/api/auth/modules/{$module->id}/complete");
+
+        $response->assertOk();
+        $response->assertJsonStructure([
+            'id',
+            'users_id',
+            'module_id',
+            'completed',
+            'completed_at',
+        ]);
+    }
 }
-
-it('permite iniciar um curso', function () {
-    /** @var \Tests\TestCase $this */
-    $user = authenticatedUser();
-    $course = Course::factory()->create();
-
-    $response = $this->actingAs($user, 'sanctum')
-        ->postJson("/api/auth/courses/{$course->id}/start");
-
-    $response->assertOk();
-    $response->assertJsonStructure([
-        'id',
-        'users_id',
-        'course_id',
-        'started_at',
-    ]);
-});
-
-it('permite marcar módulo como completo', function () {
-    /** @var \Tests\TestCase $this */
-    $user = authenticatedUser();
-    $course = Course::factory()->create();
-    $module = Module::factory()->create([
-        'course_id' => $course->id,
-    ]);
-
-    $response = $this->actingAs($user, 'sanctum')
-        ->postJson("/api/auth/modules/{$module->id}/complete");
-
-    $response->assertOk();
-    $response->assertJsonStructure([
-        'id',
-        'users_id',
-        'module_id',
-        'completed',
-        'completed_at',
-    ]);
-});
