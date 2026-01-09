@@ -12,7 +12,7 @@ class ProjectTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_usuario_pode_submeter_projeto()
+    public function test_user_can_submit_project()
     {
         $user = User::factory()->create();
         $module = Module::factory()->create();

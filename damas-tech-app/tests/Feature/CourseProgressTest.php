@@ -19,7 +19,7 @@ class CourseProgressTest extends TestCase
         ]);
     }
 
-    public function test_permite_iniciar_um_curso()
+    public function test_allows_starting_a_course()
     {
         $user = $this->authenticatedUser();
         $course = Course::factory()->create();
@@ -36,7 +36,7 @@ class CourseProgressTest extends TestCase
         ]);
     }
 
-    public function test_permite_marcar_modulo_como_completo()
+    public function test_allows_marking_module_as_complete()
     {
         $user = $this->authenticatedUser();
         $course = Course::factory()->create();

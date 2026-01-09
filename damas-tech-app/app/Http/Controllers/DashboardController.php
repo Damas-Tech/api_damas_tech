@@ -23,7 +23,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        $companyId = $user->company_id;
+        $companyId = $user->company?->id;
 
         if (!$companyId) {
             $courses = Course::count();

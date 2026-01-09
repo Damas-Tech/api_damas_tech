@@ -14,7 +14,7 @@ class CodeChallengeTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_usuario_pode_verificar_desafio_com_sucesso()
+    public function test_user_can_verify_challenge_successfully()
     {
         $user = User::factory()->create();
         $module = Module::factory()->create();
@@ -59,7 +59,7 @@ class CodeChallengeTest extends TestCase
         ]);
     }
 
-    public function test_usuario_falha_no_desafio_se_output_incorreto()
+    public function test_user_fails_challenge_if_incorrect_output()
     {
         $user = User::factory()->create();
         $module = Module::factory()->create();
@@ -101,5 +101,43 @@ class CodeChallengeTest extends TestCase
             'challenge_id' => $challenge->id,
             'status' => 'failed',
         ]);
+    }
+
+    public function test_syntax_error_returns_failed_status()
+    {
+        $user = User::factory()->create();
+        $module = Module::factory()->create();
+        $challenge = CodeChallenge::factory()->create([
+            'module_id' => $module->id,
+            'expected_output' => 'Hello World',
+        ]);
+
+        // Mock CodeExecutionService
+        $this->mock(CodeExecutionService::class, function (MockInterface $mock) {
+            $mock->shouldReceive('executeCode')
+                ->once()
+                ->andReturn([
+                    'run' => [
+                        'stdout' => '',
+                        'stderr' => 'SyntaxError: unexpected EOF while parsing',
+                        'code' => 1,
+                    ]
+                ]);
+        });
+
+        $response = $this->actingAs($user, 'sanctum')
+            ->postJson("/api/auth/challenges/{$challenge->id}/check", [
+                'code' => "print(", // Syntax error
+                'language' => 'python',
+            ]);
+
+        $response->assertOk();
+        $response->assertJson([
+            'data' => [
+                'passed' => false,
+                'status' => 'failed',
+            ]
+        ]);
+        // Ideally we might want to check if stderr is exposed or just the failure status
     }
 }

@@ -29,7 +29,7 @@ class StatsService
 
     public function getUserStats(int $userId)
     {
-        $user = User::with(['courses', 'modules'])->find($userId);
+        $user = User::with(['courses'])->find($userId);
 
         $completedCourses = $user->courses()->wherePivotNotNull('completed_at')->count();
         $inProgressCourses = $user->courses()->wherePivotNull('completed_at')->wherePivotNotNull('started_at')->count();

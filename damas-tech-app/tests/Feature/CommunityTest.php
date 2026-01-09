@@ -16,7 +16,7 @@ class CommunityTest extends TestCase
         return User::factory()->create();
     }
 
-    public function test_usuario_pode_criar_um_topico()
+    public function test_user_can_create_a_thread()
     {
         $user = $this->authenticatedUser();
 
@@ -32,7 +32,7 @@ class CommunityTest extends TestCase
         ]);
     }
 
-    public function test_lista_topicos_retorna_paginacao()
+    public function test_threads_list_returns_pagination()
     {
         $user = $this->authenticatedUser();
         ForumThread::factory()->count(20)->create();
@@ -55,7 +55,7 @@ class CommunityTest extends TestCase
         ]);
     }
 
-    public function test_usuario_pode_responder_topico()
+    public function test_user_can_reply_to_thread()
     {
         $user = $this->authenticatedUser();
         $thread = ForumThread::factory()->create();
@@ -70,5 +70,29 @@ class CommunityTest extends TestCase
             'thread_id' => $thread->id,
             'user_id' => $user->id,
         ]);
+    }
+
+    public function test_cannot_create_thread_with_empty_data()
+    {
+        $user = $this->authenticatedUser();
+
+        $response = $this->actingAs($user, 'sanctum')->postJson('/api/auth/community/threads', [
+            'title' => '',
+            'content' => '',
+        ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['title', 'content']);
+    }
+
+    public function test_cannot_reply_to_non_existent_thread()
+    {
+        $user = $this->authenticatedUser();
+
+        $response = $this->actingAs($user, 'sanctum')->postJson("/api/auth/community/threads/99999/reply", [
+            'content' => 'Resposta orfã',
+        ]);
+
+        $response->assertNotFound();
     }
 }
