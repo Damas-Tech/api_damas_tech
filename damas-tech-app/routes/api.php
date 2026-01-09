@@ -17,6 +17,7 @@ use App\Http\Controllers\JobOpportunityController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\ModuleMaterialController;
 use App\Http\Controllers\UserController;
+use App\Models\ModuleMaterial;
 
 Route::get('/health', function () {
     return response()->json([
@@ -80,7 +81,7 @@ Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
     Route::middleware(['auth:sanctum', 'role:user'])->get('/user/matches/jobs', [MatchController::class, 'userJobs']);
 
     Route::middleware(['auth:sanctum', 'role:user'])->post('/progress/{type}/{id}/complete', function ($type, $id, \App\Services\UserProgressService $service) {
-        $class = $type === 'video' ? \App\Models\ModuleVideo::class : \App\Models\ModuleMaterial::class;
+        $class = $type === 'video' ? \App\Models\ModuleVideo::class : ModuleMaterial::class;
         $progressable = $class::findOrFail($id);
         $progress = $service->markAsCompleted($progressable);
 

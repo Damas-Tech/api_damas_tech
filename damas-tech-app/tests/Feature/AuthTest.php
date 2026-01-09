@@ -24,6 +24,8 @@ class AuthTest extends TestCase
 
     public function test_registers_a_user_and_returns_standardized_resource()
     {
+        \Illuminate\Support\Facades\Queue::fake();
+
         $response = $this->postJson('/api/auth/register/user', [
             'name' => 'Teste',
             'email' => 'teste@example.com',
@@ -42,6 +44,7 @@ class AuthTest extends TestCase
         ]);
 
         $this->assertTrue(User::where('email', 'teste@example.com')->exists());
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\SendWelcomeEmail::class);
     }
 
     public function test_logs_in_with_valid_credentials()

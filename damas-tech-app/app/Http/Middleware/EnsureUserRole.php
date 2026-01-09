@@ -12,7 +12,7 @@ class EnsureUserRole
         $user = $request->user();
 
         if (!$user || $user->role !== $role) {
-            return response()->json(['message' => 'Acesso negado.'], 403);
+            return response()->json(['message' => __('messages.error.access_denied')], 403);
         }
 
         return $next($request);

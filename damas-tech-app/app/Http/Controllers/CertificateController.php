@@ -17,7 +17,7 @@ class CertificateController extends Controller
 
             if (!$progressService->isCourseCompleted($user->id, $courseId)) {
                 return response()->json([
-                    'message' => ErrorMessages::get('course.not_found', 'Certificado disponível apenas após conclusão do curso.'),
+                    'message' => ErrorMessages::get('course.certificate_unavailable'),
                 ], 403);
             }
 
@@ -63,15 +63,15 @@ class CertificateController extends Controller
             $submission = \App\Models\ProjectSubmission::with('material.module.course')->find($submissionId);
 
             if (!$submission) {
-                return response()->json(['message' => 'Submissão não encontrada.'], 404);
+                return response()->json(['message' => ErrorMessages::get('error.submission_not_found')], 404);
             }
 
             if ($submission->user_id !== $user->id) {
-                return response()->json(['message' => 'Acesso não autorizado.'], 403);
+                return response()->json(['message' => ErrorMessages::get('error.forbidden')], 403);
             }
 
             if ($submission->status !== 'approved') {
-                return response()->json(['message' => 'Certificado disponível apenas para projetos aprovados.'], 403);
+                return response()->json(['message' => ErrorMessages::get('error.submission_not_approved')], 403);
             }
 
             $data = [

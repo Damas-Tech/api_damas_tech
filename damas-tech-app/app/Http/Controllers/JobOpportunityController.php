@@ -14,7 +14,7 @@ class JobOpportunityController extends Controller
     {
         $company = Auth::user()->company;
 
-        if (! $company) {
+        if (!$company) {
             return response()->json([
                 'message' => ErrorMessages::get('jobs.forbidden'),
             ], 403);
@@ -29,7 +29,7 @@ class JobOpportunityController extends Controller
     {
         $company = Auth::user()->company;
 
-        if (! $company) {
+        if (!$company) {
             return response()->json([
                 'message' => ErrorMessages::get('jobs.forbidden'),
             ], 403);
@@ -59,7 +59,7 @@ class JobOpportunityController extends Controller
         }
 
         return (new JobOpportunityResource($job))
-            ->additional(['message' => 'Vaga criada com sucesso.'])
+            ->additional(['message' => __('messages.success.job_created')])
             ->response()
             ->setStatusCode(201);
     }

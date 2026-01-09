@@ -7,6 +7,7 @@ use App\Models\Module;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Queue;
 
 class CourseProgressTest extends TestCase
 {
@@ -38,12 +39,15 @@ class CourseProgressTest extends TestCase
 
     public function test_allows_marking_module_as_complete()
     {
+        Queue::fake();
+
         $user = $this->authenticatedUser();
         $course = Course::factory()->create();
         $module = Module::factory()->create([
             'course_id' => $course->id,
         ]);
 
+        // Complete the module - this might trigger course completion if it's the only module
         $response = $this->actingAs($user, 'sanctum')
             ->postJson("/api/auth/modules/{$module->id}/complete");
 
@@ -55,5 +59,9 @@ class CourseProgressTest extends TestCase
             'completed',
             'completed_at',
         ]);
+
+        // Since it's the only module, course should complete and dispatch jobs
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\SendCourseCompletedEmail::class);
+        \Illuminate\Support\Facades\Queue::assertPushed(\App\Jobs\UpdateTalentPoolStatus::class);
     }
 }

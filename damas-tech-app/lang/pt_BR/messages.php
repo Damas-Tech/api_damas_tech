@@ -11,6 +11,7 @@ return [
         'logout_success' => 'Logout realizado com sucesso',
         'email_sent' => 'Se o e-mail existir em nossa base, um link foi enviado.',
         'support_received' => 'Sua mensagem foi recebida com sucesso! Verifique seu e-mail.',
+        'job_created' => 'Vaga criada com sucesso.',
     ],
 
     'error' => [
@@ -29,6 +30,9 @@ return [
         'job_create_failed' => 'Não foi possível criar a vaga no momento.',
         'match_calc_error' => 'Ocorreu um erro ao calcular os matches.',
         'certificate_unavailable' => 'Certificado disponível apenas após conclusão do curso.',
+        'submission_not_found' => 'Submissão não encontrada.',
+        'submission_not_approved' => 'Certificado disponível apenas para projetos aprovados.',
+        'access_denied' => 'Acesso negado.',
     ],
 
     'info' => [
