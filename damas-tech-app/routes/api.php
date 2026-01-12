@@ -75,9 +75,11 @@ Route::middleware('throttle:6,1')->prefix('auth')->group(function (): void {
 
         Route::match(['put', 'patch'], '/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
+        Route::post('/users', [UserController::class, 'store']);
 
         Route::match(['put', 'patch'], '/companies/{company}', [CompanyController::class, 'update']);
         Route::delete('/companies/{company}', [CompanyController::class, 'destroy']);
+        Route::post('/companies', [CompanyController::class, 'store']);
     });
 
     Route::middleware(['auth:sanctum', 'role:user'])->get('/user/matches/jobs', [MatchController::class, 'userJobs']);

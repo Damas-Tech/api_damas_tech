@@ -822,8 +822,50 @@ paths:
                 properties:
                   data:
                     type: array
-                    items:
-                      $ref: "#/components/schemas/User"
+                      items:
+                        $ref: "#/components/schemas/UserResponse"
+
+    post:
+      summary: Cria nova conta de usuária
+      description: Disponível para criação administrativa ou registro direto via API (requer autenticação).
+      tags: [Usuárias]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                role:
+                  type: string
+                  enum: [user, company]
+                  default: user
+      responses:
+        "201":
+          description: Usuária criada com sucesso
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/UserResponse"
 
   /api/auth/users/{userId}:
     get:

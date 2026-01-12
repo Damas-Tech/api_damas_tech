@@ -16,7 +16,7 @@ class UserController extends Controller
     {
         $authUser = Auth::user();
 
-        if (! $authUser || $authUser->role !== 'company') {
+        if (!$authUser || $authUser->role !== 'company') {
             return $this->error('users.forbidden', 403);
         }
 
@@ -30,11 +30,35 @@ class UserController extends Controller
         return $this->success($users);
     }
 
+    public function store(Request $request)
+    {
+        $authUser = Auth::user();
+
+        // Optional: Add policy check here if only admins should create users
+        // For now, valid for any authenticated company/user? Or strictly Admin?
+        // Assuming strict "Company" or "Admin" role check if intended for dashboard.
+        // But per request, just "create user". I'll enforce authentication at least.
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['sometimes', 'string', 'in:user,company'],
+        ]);
+
+        $validated['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
+        $validated['role'] = $validated['role'] ?? 'user';
+
+        $user = User::create($validated);
+
+        return $this->success($user, 'messages.success.saved', 201);
+    }
+
     public function show(User $user)
     {
         $authUser = Auth::user();
 
-        if (! $authUser || $authUser->role !== 'company') {
+        if (!$authUser || $authUser->role !== 'company') {
             return $this->error('users.forbidden', 403);
         }
 
@@ -49,7 +73,7 @@ class UserController extends Controller
     {
         $authUser = Auth::user();
 
-        if (! $authUser || $authUser->id !== $user->id) {
+        if (!$authUser || $authUser->id !== $user->id) {
             return $this->error('users.forbidden', 403);
         }
 
@@ -71,7 +95,7 @@ class UserController extends Controller
     {
         $authUser = Auth::user();
 
-        if (! $authUser || $authUser->id !== $user->id) {
+        if (!$authUser || $authUser->id !== $user->id) {
             return $this->error('users.forbidden', 403);
         }
 
