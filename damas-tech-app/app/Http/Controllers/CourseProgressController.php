@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\CourseProgressService;
 use App\Models\UserCourseProgress;
-use App\Models\UserModuleProgress;
+use App\Services\CourseProgressService;
 use App\Support\ErrorMessages;
+use Illuminate\Http\Request;
 
 class CourseProgressController extends Controller
 {

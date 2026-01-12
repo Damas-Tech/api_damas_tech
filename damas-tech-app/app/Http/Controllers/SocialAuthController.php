@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\ExternalAuth;
+use App\Models\User;
 use App\Traits\ApiResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -27,7 +28,7 @@ class SocialAuthController extends Controller
             // Check if user already exists
             $user = User::where('email', $googleUser->getEmail())->first();
 
-            if (!$user) {
+            if (! $user) {
                 // Register new user
                 $user = User::create([
                     'name' => $googleUser->getName(),
@@ -58,15 +59,14 @@ class SocialAuthController extends Controller
             // In a real SPA, we would probably redirect to a frontend URL with the token
             // For this API test, we return the JSON.
             // But since this is a callback from browser, returning JSON might be awkward.
-            // Usually we assume frontend handles the popup/redirect. 
+            // Usually we assume frontend handles the popup/redirect.
             // If frontend is separate, this callback URL should actually be the frontend URL which then calls API with code.
             // For simplicity here in backend-only dev:
 
             return $this->success([
                 'user' => $user,
-                'token' => $token
+                'token' => $token,
             ], 'messages.success.login_success');
-
         } catch (\Exception $e) {
             return $this->error('messages.error.unexpected', 500);
         }

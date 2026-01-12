@@ -1,11 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Jobs\SendSupportReplyEmail;
-use Illuminate\Http\Request;
-
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 
 class SupportController extends Controller
 {
@@ -16,7 +17,7 @@ class SupportController extends Controller
         $request->validate([
             'email' => 'required|email',
             'message' => 'required|string|min:10',
-            'name' => 'required|string'
+            'name' => 'required|string',
         ]);
 
         // Logic to save ticket to database would go here...

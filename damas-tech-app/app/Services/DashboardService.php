@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\Company;
 use App\Models\Course;
 use App\Models\Module;
 use App\Models\ModuleMaterial;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class DashboardService

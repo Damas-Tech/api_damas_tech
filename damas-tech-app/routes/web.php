@@ -1,8 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Models\User;
+declare(strict_types=1);
+
 use App\Models\Company;
+use App\Models\User;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return response()->json([
@@ -60,7 +62,7 @@ Route::get('/_preview/certificate/course', function () {
     return view('certificates.course_certificate', [
         'user' => $user,
         'courseTitle' => 'HTML para iniciantes',
-        'description' => 'Certificamos que a estudante concluiu com êxito o curso "HTML para iniciantes", participando das aulas teóricas e práticas e cumprindo a carga horária proposta.',
+        'description' => 'Certificamos que a estudante concluiu com êxito o curso "HTML para iniciantes".',
         'completedAt' => now()->format('d/m/Y'),
         'hours' => '10 horas',
         'modules' => '5 módulos',
@@ -68,13 +70,15 @@ Route::get('/_preview/certificate/course', function () {
 });
 
 Route::get('/_preview/email/password-reset', function () {
-    return view('emails.password_reset', ['url' => 'http://localhost/reset-token']);
+    return view('emails.password_reset', [
+        'url' => 'http://localhost/reset-token',
+    ]);
 });
 
 Route::get('/_preview/email/support', function () {
     return view('emails.support_reply', [
         'name' => 'Fernanda Oliveira',
         'ticketId' => 'SUP-2024-9912',
-        'originalMessage' => 'Olá, não estou conseguindo gerar meu certificado do curso de UX Design. Podem ajudar?'
+        'originalMessage' => 'Olá, não estou conseguindo gerar meu certificado.',
     ]);
 });

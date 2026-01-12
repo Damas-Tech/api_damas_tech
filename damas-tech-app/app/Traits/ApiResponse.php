@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
@@ -8,13 +10,8 @@ trait ApiResponse
 {
     /**
      * Success Response
-     *
-     * @param mixed $data
-     * @param string $messageKey
-     * @param int $statusCode
-     * @return JsonResponse
      */
-    protected function success($data = [], string $messageKey = 'messages.success.saved', int $statusCode = 200): JsonResponse
+    protected function success(mixed $data = [], string $messageKey = 'messages.success.saved', int $statusCode = 200): JsonResponse
     {
         $message = __($messageKey);
 
@@ -31,13 +28,8 @@ trait ApiResponse
 
     /**
      * Error Response
-     *
-     * @param string $messageKey
-     * @param int $statusCode
-     * @param mixed $errors
-     * @return JsonResponse
      */
-    protected function error(string $messageKey = 'messages.error.unexpected', int $statusCode = 400, $errors = []): JsonResponse
+    protected function error(string $messageKey = 'messages.error.unexpected', int $statusCode = 400, mixed $errors = []): JsonResponse
     {
         $message = __($messageKey);
 
@@ -50,7 +42,7 @@ trait ApiResponse
             'message' => $message,
         ];
 
-        if (!empty($errors)) {
+        if ($errors !== []) {
             $response['errors'] = $errors;
         }
 

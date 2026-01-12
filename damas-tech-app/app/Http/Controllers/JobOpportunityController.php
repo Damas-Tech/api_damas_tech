@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Resources\JobOpportunityResource;
 use App\Models\JobOpportunity;
+use App\Support\ErrorMessages;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Support\ErrorMessages;
 
 class JobOpportunityController extends Controller
 {
@@ -14,7 +16,7 @@ class JobOpportunityController extends Controller
     {
         $company = Auth::user()->company;
 
-        if (!$company) {
+        if (! $company) {
             return response()->json([
                 'message' => ErrorMessages::get('jobs.forbidden'),
             ], 403);
@@ -29,7 +31,7 @@ class JobOpportunityController extends Controller
     {
         $company = Auth::user()->company;
 
-        if (!$company) {
+        if (! $company) {
             return response()->json([
                 'message' => ErrorMessages::get('jobs.forbidden'),
             ], 403);

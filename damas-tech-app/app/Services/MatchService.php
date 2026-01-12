@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\JobOpportunity;
 use App\Models\TalentPool;
+use App\Models\User;
 
 class MatchService
 {
@@ -122,7 +124,7 @@ class MatchService
             return 0.0;
         }
 
-        return round((count($matched) / count($allRequired)) * 100, 2);
+        return round(count($matched) / count($allRequired) * 100, 2);
     }
 
     protected function combineScores(float $skillScore, float $cultureScore): float

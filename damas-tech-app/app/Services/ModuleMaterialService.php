@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Repositories\ModuleMaterialRepository;
-use Illuminate\Support\Facades\Storage;
 
 class ModuleMaterialService
 {
-    protected $repository;
+    protected ModuleMaterialRepository $repository;
 
     public function __construct(ModuleMaterialRepository $repository)
     {

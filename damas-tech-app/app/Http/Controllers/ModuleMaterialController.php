@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Services\ModuleMaterialService;
-use Illuminate\Http\Request;
 use App\Http\Resources\ModuleMaterialResource;
+use App\Services\ModuleMaterialService;
 use App\Support\ErrorMessages;
+use Illuminate\Http\Request;
 
 class ModuleMaterialController extends Controller
 {

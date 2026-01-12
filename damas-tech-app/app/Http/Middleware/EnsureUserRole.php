@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Middleware;
 
 use Closure;
@@ -11,7 +13,7 @@ class EnsureUserRole
     {
         $user = $request->user();
 
-        if (!$user || $user->role !== $role) {
+        if (! $user || $user->role !== $role) {
             return response()->json(['message' => __('messages.error.access_denied')], 403);
         }
 

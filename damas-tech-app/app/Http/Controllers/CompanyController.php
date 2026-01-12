@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CompanyResource;
 use App\Models\Company;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Traits\ApiResponse;
 
 class CompanyController extends Controller
 {
@@ -14,7 +15,7 @@ class CompanyController extends Controller
 
     public function index(Request $request)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return $this->error('auth.unauthenticated', 401);
         }
 
@@ -47,7 +48,7 @@ class CompanyController extends Controller
 
     public function show(Company $company)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return $this->error('auth.unauthenticated', 401);
         }
 
@@ -58,7 +59,7 @@ class CompanyController extends Controller
     {
         $authUser = Auth::user();
 
-        if (!$authUser || $authUser->id !== $company->users_id) {
+        if (! $authUser || $authUser->id !== $company->users_id) {
             return $this->error('companies.forbidden', 403);
         }
 
@@ -79,7 +80,7 @@ class CompanyController extends Controller
     {
         $authUser = Auth::user();
 
-        if (!$authUser || $authUser->id !== $company->users_id) {
+        if (! $authUser || $authUser->id !== $company->users_id) {
             return $this->error('companies.forbidden', 403);
         }
 

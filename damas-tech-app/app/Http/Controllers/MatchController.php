@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Http\Resources\MatchResultResource;
 use App\Models\JobOpportunity;
 use App\Services\MatchService;
-use Illuminate\Support\Facades\Auth;
 use App\Support\ErrorMessages;
+use Illuminate\Support\Facades\Auth;
 
 class MatchController extends Controller
 {
-    public function __construct(protected MatchService $matchService) {}
+    public function __construct(protected MatchService $matchService)
+    {
+    }
 
     public function jobCandidates($jobId)
     {

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Models\ForumThread;
 use App\Models\ForumReply;
+use App\Models\ForumThread;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 

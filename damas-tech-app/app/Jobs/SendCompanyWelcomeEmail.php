@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Mail\CompanyWelcomeMail;
@@ -15,14 +17,14 @@ class SendCompanyWelcomeEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $company;
+    protected $company;
 
     public function __construct(Company $company)
     {
         $this->company = $company;
     }
 
-    public function handle()
+    public function handle(): void
     {
         $email = $this->company->email;
 

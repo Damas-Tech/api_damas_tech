@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
@@ -34,9 +36,10 @@ class CodeExecutionService
      * @param string $version The version of the language (optional, Piston usually handles latest/default)
      * @param string $code The source code to execute
      * @param string $stdin Standard input (optional)
+     *
      * @return array Result containing stdout, stderr, etc.
      */
-    public function executeCode(string $language, string $code, string $version = '*', string $stdin = '')
+    public function executeCode(string $language, string $code, string $version = '*', string $stdin = ''): array
     {
         try {
             $payload = [
@@ -65,7 +68,6 @@ class CodeExecutionService
                     'code' => $response->status(),
                 ],
             ];
-
         } catch (\Exception $e) {
             Log::error('Exception executing code', ['error' => $e->getMessage()]);
             return [

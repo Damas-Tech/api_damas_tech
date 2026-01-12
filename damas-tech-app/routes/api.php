@@ -1,23 +1,25 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+declare(strict_types=1);
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CertificateController;
-use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\PasswordResetController;
-use App\Http\Controllers\SupportController;
-use App\Http\Controllers\SocialAuthController;
-use App\Http\Controllers\CommunityController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\CodeExecutionController;
 use App\Http\Controllers\CodeChallengeController;
+use App\Http\Controllers\CodeExecutionController;
+use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CourseProgressController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobOpportunityController;
 use App\Http\Controllers\MatchController;
 use App\Http\Controllers\ModuleMaterialController;
+use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\SupportController;
 use App\Http\Controllers\UserController;
 use App\Models\ModuleMaterial;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/health', function () {
     return response()->json([
@@ -36,7 +38,7 @@ Route::get('/docs/openapi', function () {
     ]);
 });
 
-Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
+Route::middleware('throttle:6,1')->prefix('auth')->group(function (): void {
     Route::post('/register/user', [AuthController::class, 'registerUser']);
     Route::post('/register/company', [AuthController::class, 'registerCompany']);
     Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail']);
@@ -44,11 +46,11 @@ Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
     Route::get('/auth/google', [SocialAuthController::class, 'redirectToGoogle']);
     Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
     Route::post('/login', [AuthController::class, 'login']);
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:sanctum')->group(function (): void {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
     });
-    Route::middleware(['auth:sanctum', 'role:company'])->group(function () {
+    Route::middleware(['auth:sanctum', 'role:company'])->group(function (): void {
         Route::get('/company/jobs', [JobOpportunityController::class, 'index']);
         Route::post('/company/jobs', [JobOpportunityController::class, 'store']);
         Route::get('/company/jobs/{jobId}/matches', [MatchController::class, 'jobCandidates']);
@@ -57,7 +59,7 @@ Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
         Route::get('/users/{user}', [UserController::class, 'show']);
     });
 
-    Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
+    Route::middleware(['auth:sanctum', 'role:user'])->group(function (): void {
         Route::post('/courses/{courseId}/start', [CourseProgressController::class, 'startCourse']);
         Route::post('/modules/{moduleId}/complete', [CourseProgressController::class, 'completeModule']);
         Route::get('/courses/{courseId}/progress', [CourseProgressController::class, 'viewCourseProgress']);
@@ -67,7 +69,7 @@ Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
     Route::middleware(['auth:sanctum', 'role:company'])->get('/dashboard/company', [DashboardController::class, 'companyDashboard']);
     Route::middleware(['auth:sanctum', 'role:user'])->get('/dashboard/user', [DashboardController::class, 'userDashboard']);
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware('auth:sanctum')->group(function (): void {
         Route::get('/companies', [CompanyController::class, 'index']);
         Route::get('/companies/{company}', [CompanyController::class, 'show']);
 
@@ -88,13 +90,13 @@ Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
         return response()->json($progress);
     });
 
-    Route::prefix('modules/{moduleId}/materials')->group(function () {
+    Route::prefix('modules/{moduleId}/materials')->group(function (): void {
         Route::middleware('auth:sanctum')->get('/', [ModuleMaterialController::class, 'index']);
         Route::middleware(['auth:sanctum', 'role:company'])->post('/', [ModuleMaterialController::class, 'store']);
         Route::middleware(['auth:sanctum', 'role:company'])->delete('/{id}', [ModuleMaterialController::class, 'destroy']);
     });
     // Community / Forum
-    Route::prefix('community')->group(function () {
+    Route::prefix('community')->group(function (): void {
         Route::get('/threads', [CommunityController::class, 'index']);
         Route::post('/threads', [CommunityController::class, 'store']);
         Route::get('/threads/{id}', [CommunityController::class, 'show']);
@@ -107,13 +109,18 @@ Route::middleware('throttle:6,1')->prefix('auth')->group(function () {
     Route::get('/projects/certificate/{submissionId}', [CertificateController::class, 'downloadProjectCertificate']);
 
     // Code Runner / Playground (Rate Limited)
-    Route::middleware('throttle:10,1')->prefix('code')->group(function () {
-        Route::get('/runtimes', [CodeExecutionController::class, 'runtimes']);
-        Route::post('/execute', [CodeExecutionController::class, 'execute']);
-    });
+    Route::middleware('throttle:10,1')
+        ->prefix('code')
+        ->group(function (): void {
+            Route::get('/runtimes', [CodeExecutionController::class, 'runtimes']);
+            Route::post('/execute', [CodeExecutionController::class, 'execute']);
+        });
 
     // Code Challenges
     Route::get('/challenges', [CodeChallengeController::class, 'index']);
     Route::get('/challenges/{id}', [CodeChallengeController::class, 'show']);
-    Route::post('/challenges/{id}/check', [CodeChallengeController::class, 'check']);
+    Route::post(
+        '/challenges/{id}/check',
+        [CodeChallengeController::class, 'check']
+    );
 });

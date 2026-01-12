@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\User;
-use App\Services\UserProgressService;
 use App\Services\StatsService;
+use App\Services\UserProgressService;
 
 class DashboardController extends Controller
 {
@@ -25,21 +27,21 @@ class DashboardController extends Controller
 
         $companyId = $user->company?->id;
 
-        if (!$companyId) {
+        if (! $companyId) {
             $courses = Course::count();
             $users = User::count();
             return response()->json([
                 'global_stats' => [
                     'total_courses' => $courses,
-                    'total_users' => $users
-                ]
+                    'total_users' => $users,
+                ],
             ]);
         }
 
         $stats = $this->statsService->getCompanyStats($companyId);
 
         return response()->json([
-            'stats' => $stats
+            'stats' => $stats,
         ]);
     }
 
@@ -53,7 +55,7 @@ class DashboardController extends Controller
                 'course_id' => $course->id,
                 'title' => $course->title,
                 'progress_percentage' => $this->progressService->getProgressForCourse($course),
-                'status' => 'active'
+                'status' => 'active',
             ];
         });
 
@@ -61,7 +63,7 @@ class DashboardController extends Controller
 
         return response()->json([
             'overview' => $userStats,
-            'my_courses' => $courseProgress
+            'my_courses' => $courseProgress,
         ]);
     }
 }

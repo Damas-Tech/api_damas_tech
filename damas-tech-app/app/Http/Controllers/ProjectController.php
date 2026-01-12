@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Models\ProjectSubmission;
 use App\Models\ModuleMaterial;
+use App\Models\ProjectSubmission;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -33,9 +35,6 @@ class ProjectController extends Controller
                 'status' => 'pending',
             ]
         );
-
-        // TODO: Trigger notification to admins?
-
         return $this->success($submission, 'messages.success.saved');
     }
 

@@ -1,16 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Course;
 use App\Models\JobOpportunity;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use Carbon\Carbon;
 
 class StatsService
 {
-    public function getCompanyStats(int $companyId)
+    public function getCompanyStats(int $companyId): array
     {
         $totalJobs = JobOpportunity::where('company_id', $companyId)->count();
         $activeJobs = JobOpportunity::where('company_id', $companyId)->where('status', 'open')->count();
@@ -27,7 +27,7 @@ class StatsService
         ];
     }
 
-    public function getUserStats(int $userId)
+    public function getUserStats(int $userId): array
     {
         $user = User::with(['courses'])->find($userId);
 
@@ -41,7 +41,7 @@ class StatsService
             'Thu' => 0,
             'Fri' => 90,
             'Sat' => 120,
-            'Sun' => 15
+            'Sun' => 15,
         ];
 
         return [
@@ -52,7 +52,7 @@ class StatsService
         ];
     }
 
-    private function getMockViewsHistory()
+    private function getMockViewsHistory(): array
     {
         $data = [];
         for ($i = 29; $i >= 0; $i--) {
@@ -62,7 +62,7 @@ class StatsService
         return $data;
     }
 
-    private function getTopSkillsRequested(int $companyId)
+    private function getTopSkillsRequested(int $companyId): array
     {
         $jobs = JobOpportunity::where('company_id', $companyId)->get();
         $skillCounts = [];
@@ -74,7 +74,7 @@ class StatsService
             }
 
             foreach ($stack as $skill) {
-                if (!isset($skillCounts[$skill])) {
+                if (! isset($skillCounts[$skill])) {
                     $skillCounts[$skill] = 0;
                 }
                 $skillCounts[$skill]++;

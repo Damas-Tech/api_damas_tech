@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support;
 
 class ErrorMessages
@@ -29,6 +31,6 @@ class ErrorMessages
 
     public static function get(string $key, ?string $default = null): string
     {
-        return static::MESSAGES[$key] ?? ($default ?? static::MESSAGES['generic.unexpected_error']);
+        return self::MESSAGES[$key] ?? ($default ?? self::MESSAGES['generic.unexpected_error']);
     }
 }

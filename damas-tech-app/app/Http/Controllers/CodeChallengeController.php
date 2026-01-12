@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\CodeChallenge;
@@ -27,9 +29,9 @@ class CodeChallengeController extends Controller
         }
 
         $challenges = $query->with([
-            'progress' => function ($q) use ($request) {
+            'progress' => function ($q) use ($request): void {
                 $q->where('user_id', $request->user()->id);
-            }
+            },
         ])->get();
 
         return $this->success($challenges);
@@ -50,8 +52,9 @@ class CodeChallengeController extends Controller
         $userCode = $request->code;
 
         $language = $request->input('language', $challenge->language);
-        if ($language === 'any')
+        if ($language === 'any') {
             $language = 'python';
+        }
 
         $result = $this->executionService->executeCode($language, $userCode);
 

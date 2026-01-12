@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
-use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,31 +16,14 @@ class UserController extends Controller
     {
         $authUser = Auth::user();
 
-        if (!$authUser || $authUser->role !== 'company') {
+        if (! $authUser || $authUser->role !== 'company') {
             return $this->error('users.forbidden', 403);
         }
 
         $query = User::query()->where('role', 'user');
 
-        $techStack = $request->input('tech_stack');
-        if (is_string($techStack)) {
-            $techStack = array_filter(array_map('trim', explode(',', $techStack)));
-        }
-        if (is_array($techStack) && count($techStack) > 0) {
-            foreach ($techStack as $tag) {
-                $query->whereJsonContains('tech_stack', $tag);
-            }
-        }
-
-        $cultureTags = $request->input('culture_tags');
-        if (is_string($cultureTags)) {
-            $cultureTags = array_filter(array_map('trim', explode(',', $cultureTags)));
-        }
-        if (is_array($cultureTags) && count($cultureTags) > 0) {
-            foreach ($cultureTags as $tag) {
-                $query->whereJsonContains('culture_tags', $tag);
-            }
-        }
+        $this->applyArrayFilter($query, 'tech_stack', $request->input('tech_stack'));
+        $this->applyArrayFilter($query, 'culture_tags', $request->input('culture_tags'));
 
         $users = $query->paginate(15);
 
@@ -50,7 +34,7 @@ class UserController extends Controller
     {
         $authUser = Auth::user();
 
-        if (!$authUser || $authUser->role !== 'company') {
+        if (! $authUser || $authUser->role !== 'company') {
             return $this->error('users.forbidden', 403);
         }
 
@@ -65,7 +49,7 @@ class UserController extends Controller
     {
         $authUser = Auth::user();
 
-        if (!$authUser || $authUser->id !== $user->id) {
+        if (! $authUser || $authUser->id !== $user->id) {
             return $this->error('users.forbidden', 403);
         }
 
@@ -87,12 +71,25 @@ class UserController extends Controller
     {
         $authUser = Auth::user();
 
-        if (!$authUser || $authUser->id !== $user->id) {
+        if (! $authUser || $authUser->id !== $user->id) {
             return $this->error('users.forbidden', 403);
         }
 
         $user->delete();
 
         return $this->success(null, 'messages.success.deleted', 204);
+    }
+
+    private function applyArrayFilter(\Illuminate\Database\Eloquent\Builder $query, string $column, mixed $values): void
+    {
+        if (is_string($values)) {
+            $values = array_filter(array_map('trim', explode(',', $values)));
+        }
+
+        if (is_array($values) && count($values) > 0) {
+            foreach ($values as $tag) {
+                $query->whereJsonContains($column, $tag);
+            }
+        }
     }
 }

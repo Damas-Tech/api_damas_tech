@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Models\Course;
@@ -15,7 +17,7 @@ class CertificateController extends Controller
         try {
             $user = $request->user();
 
-            if (!$progressService->isCourseCompleted($user->id, $courseId)) {
+            if (! $progressService->isCourseCompleted($user->id, $courseId)) {
                 return response()->json([
                     'message' => ErrorMessages::get('course.certificate_unavailable'),
                 ], 403);
@@ -23,7 +25,7 @@ class CertificateController extends Controller
 
             $course = Course::with('modules')->find($courseId);
 
-            if (!$course) {
+            if (! $course) {
                 return response()->json([
                     'message' => ErrorMessages::get('course.not_found'),
                 ], 404);
@@ -62,7 +64,7 @@ class CertificateController extends Controller
             $user = $request->user();
             $submission = \App\Models\ProjectSubmission::with('material.module.course')->find($submissionId);
 
-            if (!$submission) {
+            if (! $submission) {
                 return response()->json(['message' => ErrorMessages::get('error.submission_not_found')], 404);
             }
 

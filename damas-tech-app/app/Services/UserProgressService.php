@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Models\Course;
 use App\Models\ModuleMaterial;
 use App\Models\ModuleVideo;
 use App\Models\UserProgress;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class UserProgressService
 {
-    public function markAsCompleted($progressable)
+    public function markAsCompleted(Model $progressable): UserProgress
     {
         return UserProgress::updateOrCreate(
             [
@@ -21,10 +25,10 @@ class UserProgressService
         );
     }
 
-    public function getProgressForCourse($course)
+    public function getProgressForCourse(Course $course): array
     {
         $userId = Auth::id();
-        $totalItems = $course->modules->sum(fn($m) => $m->materials->count() + $m->videos->count());
+        $totalItems = $course->modules->sum(fn ($m) => $m->materials->count() + $m->videos->count());
 
         $completedItems = UserProgress::where('user_id', $userId)
             ->whereIn('progressable_type', [ModuleMaterial::class, ModuleVideo::class])

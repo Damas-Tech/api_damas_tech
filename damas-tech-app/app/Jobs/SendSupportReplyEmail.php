@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Mail\SupportReplyMail;
@@ -14,8 +16,8 @@ class SendSupportReplyEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $email;
-    public $data;
+    protected $email;
+    protected $data;
 
     public function __construct(string $email, array $data)
     {
@@ -23,7 +25,7 @@ class SendSupportReplyEmail implements ShouldQueue
         $this->data = $data;
     }
 
-    public function handle()
+    public function handle(): void
     {
         Mail::to($this->email)->send(new SupportReplyMail($this->data));
     }

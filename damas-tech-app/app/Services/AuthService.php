@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\Company;
-use Illuminate\Support\Facades\Hash;
-use App\Jobs\SendWelcomeEmail;
 use App\Jobs\SendCompanyWelcomeEmail;
+use App\Jobs\SendWelcomeEmail;
+use App\Models\Company;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AuthService
 {
@@ -50,7 +52,7 @@ class AuthService
     {
         $user = User::where('email', $data['email'])->first();
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             throw new \Exception('Credenciais inválidas');
         }
 

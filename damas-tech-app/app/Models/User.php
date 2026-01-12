@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
+use App\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Traits\HasRoles;
-use App\Models\Course;
 
 class User extends Authenticatable
 {
@@ -16,16 +17,6 @@ class User extends Authenticatable
     protected $fillable = ['name', 'email', 'password', 'role', 'tech_stack', 'culture_tags'];
 
     protected $hidden = ['password', 'remember_token'];
-
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'tech_stack' => 'array',
-            'culture_tags' => 'array',
-        ];
-    }
 
     public function company()
     {
@@ -76,5 +67,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Course::class, 'user_course_progress', 'users_id', 'course_id')
             ->withPivot('started_at', 'completed_at');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'tech_stack' => 'array',
+            'culture_tags' => 'array',
+        ];
     }
 }

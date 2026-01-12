@@ -1,8 +1,11 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class ModuleMaterial extends Model
 {
@@ -15,7 +18,6 @@ class ModuleMaterial extends Model
         'file_path',
         'external_link',
     ];
-
 
     public function module()
     {

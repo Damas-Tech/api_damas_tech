@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
@@ -10,7 +12,7 @@ class PasswordResetMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $url;
+    protected $url;
 
     public function __construct(string $url)
     {

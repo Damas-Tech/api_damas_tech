@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Jobs\SendPasswordResetEmail;
@@ -19,7 +21,7 @@ class PasswordResetController extends Controller
         $user = User::where('email', $request->email)->first();
 
         // Security: We don't want to reveal if a user exists or not, so we just return success
-        if (!$user) {
+        if (! $user) {
             return $this->success([], 'messages.success.email_sent');
         }
 

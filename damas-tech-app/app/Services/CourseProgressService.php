@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Jobs\SendCourseCompletedEmail;
+use App\Jobs\UpdateTalentPoolStatus;
+use App\Models\Module;
 use App\Models\UserCourseProgress;
 use App\Models\UserModuleProgress;
-use App\Models\Module;
 use Carbon\Carbon;
-use App\Jobs\UpdateTalentPoolStatus;
-use App\Jobs\SendCourseCompletedEmail;
 
 class CourseProgressService
 {
@@ -37,7 +39,7 @@ class CourseProgressService
     {
         $modules = Module::where('course_id', $courseId)->count();
         $completedModules = UserModuleProgress::where('users_id', $userId)
-            ->whereHas('module', function ($q) use ($courseId) {
+            ->whereHas('module', function ($q) use ($courseId): void {
                 $q->where('course_id', $courseId);
             })->where('completed', true)
             ->count();

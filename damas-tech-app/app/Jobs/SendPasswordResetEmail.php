@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Mail\PasswordResetMail;
@@ -14,8 +16,8 @@ class SendPasswordResetEmail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $email;
-    public $url;
+    protected $email;
+    protected $url;
 
     public function __construct(string $email, string $url)
     {
@@ -23,7 +25,7 @@ class SendPasswordResetEmail implements ShouldQueue
         $this->url = $url;
     }
 
-    public function handle()
+    public function handle(): void
     {
         Mail::to($this->email)->send(new PasswordResetMail($this->url));
     }

@@ -1,14 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
+use App\Services\AuthService;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use App\Services\AuthService;
-use App\Http\Resources\UserResource;
-use App\Support\ErrorMessages;
-
-use App\Traits\ApiResponse;
 
 class AuthController extends Controller
 {
