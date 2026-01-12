@@ -822,8 +822,8 @@ paths:
                 properties:
                   data:
                     type: array
-                      items:
-                        $ref: "#/components/schemas/UserResponse"
+                    items:
+                      $ref: "#/components/schemas/UserResponse"
 
     post:
       summary: Cria nova conta de usuária
@@ -967,6 +967,45 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Company"
+
+    post:
+      summary: Cria nova empresa
+      description: Vincula a nova empresa à conta autenticada.
+      tags: [Empresas]
+      security:
+        - sanctumAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - cnpj
+              properties:
+                cnpj:
+                  type: string
+                  example: "12.345.678/0001-90"
+                tech_stack:
+                  type: array
+                  items:
+                    type: string
+                culture_tags:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "201":
+          description: Empresa criada com sucesso
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+                  - type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/CompanyResponse"
 
   /api/auth/companies/{companyId}:
     get:
